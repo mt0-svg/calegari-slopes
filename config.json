@@ -1,0 +1,8 @@
+{
+  "challenge_module": "CalegariSlopes.Challenge",
+  "solution_module": "CalegariSlopes.Solution",
+  "theorem_names": ["CalegariSlopes.Overconvergent.calegari_conjecture_overconvergent"],
+  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
+  "enable_nanoda": true,
+  "lean_kernel": false
+}

@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+type: software
+title: "Slopes of overconvergent 3-adic modular forms of weight zero"
+authors:
+  - name: mt0-svg
+repository-code: "https://github.com/mt0-svg/calegari-slopes"
+license: Apache-2.0
+version: v1.0.0
+doi: 10.5281/zenodo.23608428
+keywords:
+  - Calegari conjecture
+  - overconvergent modular forms
+  - slopes
+  - Atkin operator
+  - LU factorization
+  - Ramanujan's differential equations
+  - p-adic modular forms
+  - Lean 4
+  - formal verification
+preferred-citation:
+  type: article
+  title: "Slopes of overconvergent 3-adic modular forms of weight zero"
+  authors:
+    - name: mt0-svg
+  doi: 10.5281/zenodo.23608428
+  url: "https://github.com/mt0-svg/calegari-slopes"

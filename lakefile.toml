@@ -1,0 +1,43 @@
+name = "calegari-slopes"
+version = "1.0.0"
+description = "Calegari's conjecture on the slopes of U_3 in tame level 1 and weight 0, proved"
+keywords = ["math", "formal verification", "overconvergent modular forms", "slopes", "Calegari conjecture"]
+license = "Apache-2.0"
+licenseFiles = ["LICENSE", "NOTICE"]
+preferReleaseBuild = true
+releaseRepo = "https://github.com/mt0-svg/calegari-slopes"
+defaultTargets = ["Statement", "Main", "Challenge", "Solution"]
+
+[leanOptions]
+pp.unicode.fun = true
+relaxedAutoImplicit = false
+autoImplicit = false
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.34.1"
+
+# The two statement files, without their theorems: the definitions the development is about.
+[[lean_lib]]
+name = "Statement"
+roots = ["CalegariSlopes.Statement", "CalegariSlopes.Target"]
+
+# The development: its two main theorems, and the statements of Section 8 of the paper (Conj5).
+[[lean_lib]]
+name = "Main"
+roots = ["CalegariSlopes.Main"]
+globs = ["CalegariSlopes.Main", "CalegariSlopes.Final", "CalegariSlopes.ADB.+", "CalegariSlopes.Bridge.+",
+  "CalegariSlopes.Spectral.+", "CalegariSlopes.Newton.+", "CalegariSlopes.Conj5.+"]
+
+# The four statement files with their theorems and `sorry`, which nothing imports, and the modules that prove the
+# first two; Conj5.Main and Conj5.SpectralMain prove the other two. The pairs Comparator checks (config.json,
+# config-matrix.json, config-conj5.json, config-conj5-spectral.json).
+[[lean_lib]]
+name = "Challenge"
+roots = ["CalegariSlopes.Challenge", "CalegariSlopes.ChallengeMatrix", "CalegariSlopes.ChallengeConj5",
+  "CalegariSlopes.ChallengeConj5Spectral"]
+
+[[lean_lib]]
+name = "Solution"
+roots = ["CalegariSlopes.Solution", "CalegariSlopes.SolutionStatement", "CalegariSlopes.SolutionMatrix"]

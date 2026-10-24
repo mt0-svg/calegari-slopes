@@ -1,0 +1,22 @@
+{
+  "challenge_module": "CalegariSlopes.ChallengeConj5",
+  "solution_module": "CalegariSlopes.Conj5.Main",
+  "theorem_names": [
+    "CalegariSlopes.Conj5.factorization",
+    "CalegariSlopes.Conj5.factors_unitTriangular",
+    "CalegariSlopes.Conj5.factorization_unique",
+    "CalegariSlopes.Conj5.integral_iff",
+    "CalegariSlopes.Conj5.congr_maximal_iff",
+    "CalegariSlopes.Conj5.valuation_B_ge",
+    "CalegariSlopes.Conj5.valuation_A_ge",
+    "CalegariSlopes.Conj5.valuation_uniform",
+    "CalegariSlopes.Conj5.congr_three_iff",
+    "CalegariSlopes.Conj5.B_two_four",
+    "CalegariSlopes.Conj5.A_four_two",
+    "CalegariSlopes.Conj5.padicValRat_B_two_four",
+    "CalegariSlopes.Conj5.padicValRat_A_four_two"
+  ],
+  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
+  "enable_nanoda": true,
+  "lean_kernel": false
+}

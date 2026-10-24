@@ -1,0 +1,18 @@
+Slopes of overconvergent 3-adic modular forms of weight zero
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This project contains code taken from fermats-last-theorem (Anthropic, PBC) and from PhD (William Coram), both
+under the Apache License, Version 2.0, and is built on Mathlib, Copyright (c) the respective Mathlib authors,
+Apache License 2.0. The file taken whole, CalegariSlopes/Bridge/RamanujanPort.lean, keeps its licence
+header; the two lemmas taken from PhD sit in CalegariSlopes/Newton/Proofs.lean, whose header carries William
+Coram's copyright line. Each names its source in its header; the sources, commits and changes are listed in
+README.md, section Built on.
+
+The NOTICE file of fermats-last-theorem begins:
+
+  Fermat's Last Theorem in Lean 4
+  Copyright 2026 Anthropic, PBC
+
+  This repository is made available under the Apache License, Version 2.0 (see the file LICENSE).
+
+PhD has no NOTICE file.

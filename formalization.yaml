@@ -1,0 +1,218 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "calegari-slopes"
+  description: >-
+    Calegari's conjecture: the slopes of the Atkin operator U_3 on 3-adic overconvergent cusp forms of tame level 1
+    and weight 0 are 2i + 2v_3((2i)!/i!), i >= 1, each with multiplicity one; and the valuations of the coefficients
+    of the characteristic series of the matrix of U_3. Through Loeffler's factorization U = ADB of that matrix.
+  authors: [mt0-svg]
+  license: "Apache-2.0"
+
+sources:
+  - title: "Spectral expansions of overconvergent modular functions"
+    authors: ["David Loeffler"]
+    id: "https://doi.org/10.1093/imrn/rnm050"
+    type: article
+    location: "Section 3: Calegari's conjecture on the slopes and the factorization U = ADB (arXiv:math/0701168)"
+    relationship: formalizes
+    note: "the conjecture, which Smithline records as Calegari's (Compact operators with rational generation, CRM Proc. Lecture Notes 36, 2004)"
+    author_endorsement: not-contacted
+  - title: "Slopes of overconvergent 3-adic modular forms of weight zero"
+    authors: [mt0-svg]
+    id: "https://github.com/mt0-svg/calegari-slopes"
+    type: original-proof
+    location: "paper/main.tex, Theorem 1.2 and Corollary 7.1"
+    relationship: formalizes
+    author_endorsement: n/a
+
+related_formalizations: []
+
+classification:
+  arxiv: ["math.NT"]
+  msc2020: ["11F33", "11F85", "11F11", "33C20", "03B35"]
+
+status:
+  scope: "Theorem 1.2 and every other numbered statement of the paper, Conjecture 1.1 aside, which Theorem 1.2 proves."
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: [propext, Classical.choice, Quot.sound]
+  main_results:
+    - declaration: "CalegariSlopes.Final.calegari_conjecture_overconvergent"
+      file: "CalegariSlopes/Final.lean"
+      sorry_count: 0
+      axioms: [propext, Classical.choice, Quot.sound]
+      comparator_config: "config.json"
+      literature_dependencies: []
+    - declaration: "CalegariSlopes.Newton.calegari_conjecture"
+      file: "CalegariSlopes/Newton/Main.lean"
+      sorry_count: 0
+      axioms: [propext, Classical.choice, Quot.sound]
+      comparator_config: "config-matrix.json"
+      literature_dependencies: []
+    - declaration: "CalegariSlopes.Conj5.congr_three_iff"
+      file: "CalegariSlopes/Conj5/Main.lean"
+      sorry_count: 0
+      axioms: [propext, Classical.choice, Quot.sound]
+      comparator_config: "config-conj5.json"
+      literature_dependencies: []
+    - declaration: "CalegariSlopes.Conj5.spectral_expansion"
+      file: "CalegariSlopes/Conj5/SpectralMain.lean"
+      sorry_count: 0
+      axioms: [propext, Classical.choice, Quot.sound]
+      comparator_config: "config-conj5-spectral.json"
+      literature_dependencies: []
+
+automation:
+  methods:
+    - method: agent
+
+fidelity:
+  divergences: >-
+    The space of overconvergent cusp forms is the space of q-expansions of the series sum_m beta_m j^(-m) with
+    |beta_m| 3^(tm) -> 0 for some t > 0 (Section 1 of the paper); the formal statement does not use that U_3 maps it
+    into itself. Sequences are indexed from 0 in the formal proof. Theorem 2.4 and the proof of Theorem 1.2 are
+    stated for any series G satisfying the two parts of Theorem 2.1, then applied to g. In Section 8 the valuation
+    of an entry gamma^(j-i) x of A^(r) or B^(r), x rational and nonzero, is written v_3(x) + (6r - 3)(j - i), the
+    zero entries being exempted, and Corollaries 8.3 and 8.4 are stated for every family (x_n, lambda_n) with the
+    properties of Theorem 2.4(a) and every gamma with v_3(gamma) = 6r - 3; the paper and the formal statements are
+    about the matrices u^(r) and say nothing about the forms of radius r.
+
+review:
+  status: agent-reviewed
+  notes: "The proof was refereed by agents with fresh context; Comparator checks the two main statements against statement files that import only Mathlib, Lemma 8.1 and Theorem 8.2 against a statement file that imports in addition the definitions of Loeffler's factors, and Corollaries 8.3 and 8.4 against one that imports in addition the definitions of the sequence spaces and of the eigenvectors of Theorem 2.4(a)."
+alignment:
+  namespace: "CalegariSlopes"
+  statements:
+    - source: "Conjecture 1.1"
+      status: other
+      note: "the conjecture, which Theorem 1.2 proves"
+    - source: "Theorem 1.2"
+      lean: "CalegariSlopes.Final.calegari_conjecture_overconvergent"
+      module: "CalegariSlopes/Final.lean"
+      status: proved
+    - source: "Theorem 2.1"
+      lean: "CalegariSlopes.Bridge.jhyp_Sol"
+      module: "CalegariSlopes/Bridge/JMain.lean"
+      status: proved
+    - source: "Proposition 2.2"
+      lean: "CalegariSlopes.Spectral.BR1"
+      module: "CalegariSlopes/Spectral/QSeries.lean"
+      status: proved
+    - source: "Theorem 2.3"
+      lean: "CalegariSlopes.ADB.adb"
+      module: "CalegariSlopes/ADB/Main.lean"
+      status: proved
+    - source: "Theorem 2.4"
+      lean: "CalegariSlopes.Spectral.exists_eigenFamily"
+      module: "CalegariSlopes/Spectral/Contraction.lean"
+      status: proved
+    - source: "Lemma 3.1"
+      lean: "CalegariSlopes.Newton.u_dvd"
+      module: "CalegariSlopes/Newton/Proofs.lean"
+      status: proved
+    - source: "Lemma 3.2"
+      lean: "CalegariSlopes.Newton.norm_B_le"
+      module: "CalegariSlopes/Newton/Proofs.lean"
+      status: proved
+    - source: "Lemma 3.3"
+      lean: "CalegariSlopes.Newton.padicValRat_D"
+      module: "CalegariSlopes/Newton/Proofs.lean"
+      status: proved
+    - source: "Lemma 3.4"
+      lean: "CalegariSlopes.Spectral.slope_strictMono"
+      module: "CalegariSlopes/Spectral/Basic.lean"
+      status: proved
+    - source: "Theorem 4.1"
+      lean: "CalegariSlopes.Bridge.ram_E2"
+      module: "CalegariSlopes/Bridge/Ram.lean"
+      status: proved
+    - source: "Lemma 4.2"
+      lean: "CalegariSlopes.Bridge.lemmaU"
+      module: "CalegariSlopes/Bridge/LemmaU.lean"
+      status: proved
+    - source: "Lemma 4.3"
+      lean: "CalegariSlopes.Bridge.Level9.coeff_Sol_V3"
+      module: "CalegariSlopes/Bridge/C4U3.lean"
+      status: proved
+    - source: "Theorem 4.4"
+      lean: "CalegariSlopes.Bridge.theoremA"
+      module: "CalegariSlopes/Bridge/TheoremA.lean"
+      status: proved
+    - source: "Theorem 4.5"
+      lean: "CalegariSlopes.Bridge.Level9.I1_and"
+      module: "CalegariSlopes/Bridge/Level9.lean"
+      status: proved
+    - source: "Lemma 4.6"
+      lean: "CalegariSlopes.Bridge.Level9.ring_ME"
+      module: "CalegariSlopes/Bridge/C4Ring.lean"
+      status: proved
+    - source: "Lemma 4.7"
+      lean: "CalegariSlopes.Bridge.Level9.isColRec_col"
+      module: "CalegariSlopes/Bridge/C4Col.lean"
+      status: proved
+    - source: "Lemma 5.1"
+      lean: "CalegariSlopes.ADB.P1"
+      module: "CalegariSlopes/ADB/Main.lean"
+      status: proved
+    - source: "Lemma 5.2"
+      lean: "CalegariSlopes.ADB.RV_zero"
+      module: "CalegariSlopes/ADB/Main.lean"
+      status: proved
+    - source: "Lemma 5.3"
+      lean: "CalegariSlopes.ADB.RS_zero"
+      module: "CalegariSlopes/ADB/Main.lean"
+      status: proved
+    - source: "Lemma 5.4"
+      lean: "CalegariSlopes.ADB.V_corner"
+      module: "CalegariSlopes/ADB/Main.lean"
+      status: proved
+    - source: "Lemma 6.1"
+      lean: "CalegariSlopes.Spectral.NearBasis.exists_expand_eq"
+      module: "CalegariSlopes/Spectral/Seq.lean"
+      status: proved
+    - source: "Lemma 6.2"
+      lean: "CalegariSlopes.Spectral.norm_Cm_le"
+      module: "CalegariSlopes/Spectral/Basic.lean"
+      status: proved
+    - source: "Lemma 6.3"
+      lean: "CalegariSlopes.Spectral.bact_u_bact_A"
+      module: "CalegariSlopes/Spectral/Basic.lean"
+      status: proved
+    - source: "Proposition 6.4"
+      lean: "CalegariSlopes.Spectral.exists_eigen_DC"
+      module: "CalegariSlopes/Spectral/Contraction.lean"
+      status: proved
+    - source: "Lemma 6.5"
+      lean: "CalegariSlopes.Spectral.exists_iterate_phiS_nonpos"
+      module: "CalegariSlopes/Spectral/Seq.lean"
+      status: proved
+    - source: "Corollary 7.1"
+      lean: "CalegariSlopes.Newton.calegari_conjecture"
+      module: "CalegariSlopes/Newton/Main.lean"
+      status: proved
+    - source: "Lemma 7.2"
+      lean: "CalegariSlopes.Newton.norm_principalMinor_le_of_ne"
+      module: "CalegariSlopes/Newton/Proofs.lean"
+      status: proved
+    - source: "Lemma 8.1"
+      lean: "CalegariSlopes.Conj5.factorization"
+      module: "CalegariSlopes/Conj5/Main.lean"
+      status: proved
+    - source: "Theorem 8.2"
+      lean: "CalegariSlopes.Conj5.integral_iff"
+      module: "CalegariSlopes/Conj5/Main.lean"
+      status: proved
+    - source: "Corollary 8.3"
+      lean: "CalegariSlopes.Conj5.spectral_expansion"
+      module: "CalegariSlopes/Conj5/SpectralMain.lean"
+      status: proved
+    - source: "Corollary 8.4"
+      lean: "CalegariSlopes.Conj5.norm_x_le"
+      module: "CalegariSlopes/Conj5/SpectralMain.lean"
+      status: proved
+    - source: "Lemma A.1"
+      lean: "CalegariSlopes.ADB.Proof.cert"
+      module: "CalegariSlopes/ADB/P1.lean"
+      status: proved

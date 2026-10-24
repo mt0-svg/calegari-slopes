@@ -1,0 +1,823 @@
+\documentclass[11pt]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{glyphtounicode}
+\pdfgentounicode=1
+\usepackage{amsmath,amssymb}
+\usepackage[table]{xcolor}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage[margin=1in]{geometry}
+\usepackage{url}
+\usepackage[pdfauthor={311859884+mt0-svg@users.noreply.github.com},
+            pdftitle={Slopes of overconvergent 3-adic modular forms of weight zero},
+            pdfkeywords={overconvergent modular forms, slopes, Atkin operator, Calegari's conjecture, LU factorization, Ramanujan's differential equations, Lean 4, formal verification},
+            bookmarksnumbered=true]{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+\makeatletter\g@addto@macro\UrlBreaks{\do\.\do\_}\makeatother
+\Urlmuskip=0mu plus 1mu
+\emergencystretch=3em
+\newcommand{\repo}{https://github.com/mt0-svg/calegari-slopes}
+% robust, so that amsart does not uppercase the address in the author line
+\DeclareRobustCommand{\authorlink}{\href{\repo/issues/new/choose}{\nolinkurl{311859884+mt0-svg@users.noreply.github.com}}}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\numberwithin{equation}{section}
+
+% The map from the paper to the checks, next to each \label; these macros print nothing.
+% STATEMENTS.md lists them.
+%   \lean{A, B, ...}      the Lean declarations of the statement, the first being the one its proof names;
+%   \nolean{reason}       for a statement with no Lean declaration, the reason.
+\newcommand{\lean}[1]{\ignorespaces}
+\newcommand{\nolean}[1]{\ignorespaces}
+\newcommand{\pending}[1]{{\color{red}\textsf{\small[pending: #1]}}}
+% the Lean declaration named in the last sentence of a proof
+\DeclareUrlCommand\decl{\urlstyle{tt}}
+
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Cp}{\mathbb{C}_3}
+\newcommand{\Qp}{\mathbb{Q}_3}
+\newcommand{\Zp}{\mathbb{Z}_3}
+\newcommand{\Sd}{S_0^{\dagger}}
+\newcommand{\jinv}{j^{-1}}
+\newcommand{\cE}{\mathcal{E}}
+\newcommand{\cL}{\mathcal{L}}
+\newcommand{\Lc}{\mathcal{L}_0}
+\newcommand{\sig}{\sigma}
+\newcommand{\ord}{\operatorname{ord}}
+\newcommand{\Sol}{\operatorname{Sol}}
+
+\begin{document}
+
+\title[Slopes of overconvergent 3-adic modular forms]{Slopes of overconvergent 3-adic modular forms of weight zero}
+\author{\authorlink}
+\thanks{2020 {\em Mathematics Subject Classification.} Primary: 11F33; Secondary: 11F85, 11F11, 33C20, 03B35.\\\indent
+{\em Key words and phrases.} Overconvergent modular forms; slopes; Atkin operator; LU factorization; Ramanujan's differential equations; Lean~4.}
+
+\begin{abstract}
+We prove a conjecture of Calegari: the slopes of the Atkin operator $U_3$ on $3$-adic overconvergent cusp forms of tame level~$1$ and weight~$0$ are the numbers $2i+2v_3((2i)!/i!)$ for $i\ge1$, each with multiplicity one. The proof establishes an identity conjectured by Loeffler, which writes the matrix of $U_3$ as a lower unitriangular matrix times a diagonal matrix times an upper unitriangular matrix, all with explicit entries. The rows of the upper factor satisfy a recurrence in the column index whose coefficients are affine in the square of the row index, and this pencil structure gives the identity without any summation formula. A contraction then produces one eigenvector for each slope, and an estimate on the matrix shows that there are no other generalized eigenvectors. The matrix of $U_3$ comes from Ramanujan's differential equations for Eisenstein series. The proof is formalized in Lean~4.
+\end{abstract}
+
+\maketitle
+
+\definecolor{leangreen}{RGB}{0,122,61}
+\definecolor{paperorange}{RGB}{190,90,0}
+\newcommand{\badge}[2]{\colorbox{#1}{\strut\textcolor{white}{\sffamily\bfseries\small #2}}}
+\begin{center}
+\small
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.2\textwidth} >{\raggedright\arraybackslash}p{0.7\textwidth}}
+\rowcolor{black!6}
+\multicolumn{2}{>{\raggedright\arraybackslash}p{0.93\textwidth}}{\textit{This is AI-generated research: the results, proofs and code were found and written by AI. Credit goes to all the humans whose work it builds on.}}\\
+\badge{leangreen}{Proved in Lean 4} & Theorem~\ref{thm:main} is proved in Lean~4 with Mathlib, with no hypothesis and only the standard axioms (\texttt{CalegariSlopes.\allowbreak Final.\allowbreak calegari\_\allowbreak conjecture\_\allowbreak overconvergent}), and so is every other numbered statement of the paper, Conjecture~\ref{conj:cal} aside, which it proves. Comparator checks the main theorem and Corollary~\ref{cor:fredholm} against statement files that import only Mathlib, and the statements of Section~\ref{sec:loeffler} against two statement files that import in addition Lean definitions of the development: those of $A$, $B$ and~$D$, and for Corollaries~\ref{cor:expansion} and~\ref{cor:grading} those of the sequence spaces and of the eigenvectors of Theorem~\ref{thm:spectral}(a). nanoda, a second implementation of the Lean kernel, checks them again.\\
+\rowcolor{black!6}
+\multicolumn{2}{>{\raggedright\arraybackslash}p{0.93\textwidth}}{Lean proofs, code and the \TeX{} source: \href{\repo}{\texttt{github.com/mt0-svg/calegari-slopes}}}\\
+\end{tabular}
+\end{center}
+
+\clearpage
+\section{Introduction}\label{sec:intro}
+
+We determine the slopes of the Atkin operator $U_3$ on $3$-adic overconvergent cusp forms of tame level~$1$ and weight~$0$, as Calegari conjectured: the $i$-th slope is $2i+2v_3((2i)!/i!)$, and each occurs once. The proof establishes Loeffler's conjectural factorization of the matrix of $U_3$ and then reads the eigenvectors off the factorization.
+
+\subsection*{The statement}
+Throughout, $\Cp$ is the completion of an algebraic closure of $\Qp$, $v=v_3$ is its valuation with $v(3)=1$, and $|x|=3^{-v(x)}$. Power series in $q$ have coefficients in $\Q$ or $\Cp$, and
+\[
+E_4=1+240\sum_{n\ge1}\sigma_3(n)q^n,\qquad E_6=1-504\sum_{n\ge1}\sigma_5(n)q^n,\qquad \Delta=\frac{E_4^3-E_6^2}{1728},\qquad \jinv=\frac{\Delta}{E_4^3},
+\]
+where $\sigma_k(n)=\sum_{d\mid n}d^k$; so $\jinv=q-744q^2+356652q^3-140361152q^4+\cdots$ has rational coefficients and starts with $q$. The objects of the theorem are the following.
+\begin{enumerate}
+\item The space $\Sd$ of $3$-adic overconvergent cusp forms of tame level~$1$ and weight~$0$, written through their $q$-expansions: the power series
+\begin{equation}\label{eq:Sd}
+F=\sum_{m\ge1}\beta_m\,j^{-m}\in\Cp[[q]],\qquad \beta_m\in\Cp,\qquad |\beta_m|\,3^{tm}\to0\ \text{ for some real } t>0,
+\end{equation}
+the coefficient of $q^n$ in $F$ being the finite sum over $m\le n$.
+\item The operator $U\bigl(\sum_n a_nq^n\bigr)=\sum_n a_{3n}q^n$ on $\Cp[[q]]$.
+\item For $\mu\in\Cp$, $\mu\ne0$, the generalized eigenspace $\Sd[\mu]=\{F\in\Sd:(U-\mu)^\ell F=0 \text{ for some } \ell\ge1\}$, a $\Cp$-vector space.
+\item The numbers $\sig_i=2i+2v\bigl((2i)!/i!\bigr)$ for $i\ge1$.
+\end{enumerate}
+Item (1) is the standard space. At $3$ the only supersingular $j$-invariant in characteristic~$3$ is $j=0=1728$, so in the coordinate $\jinv$ the ordinary locus of the $j$-line, with its cusp $\jinv=0$, is the disc $|\jinv|\le1$, and for $0<r<1/2$ the $r$-overconvergent region is the disc $|\jinv|\le3^{6r}$. This region is cut out by the valuation of $E_6$, which at $3$ lifts the cube of the Hasse invariant (\cite[\S1]{Vonk15}; Loeffler compares the two in \cite[Appendix~A]{Loe07}); Smithline describes the region through the valuation of $E_6$, and the identity $E_6^2=(j-1728)\Delta$ turns it into a disc in~$\jinv$ \cite[Lemma~3.4 and the proof of Proposition~3.5]{Smi07}; Loeffler describes the corresponding region of $X_0(3)$ as a disc in a uniformizer \cite[\S2]{Loe07}. An overconvergent cusp form of weight~$0$ is a rigid analytic function on such a disc that vanishes at the cusp \cite{Katz73}, \cite[\S B2]{Col97}, and its $q$-expansion is obtained by substituting the $q$-expansion of $\jinv$ for the coordinate. The operator $U$ is $U_3$ on $q$-expansions of weight~$0$ \cite[Introduction]{Col97}, and $\Sd[\mu]$ is the generalized eigenspace, so its dimension is the algebraic multiplicity of~$\mu$. The theorem below does not use that $U$ maps $\Sd$ into itself.
+
+The formula for the slopes was found by Calegari from Smithline's computations; Smithline records it, and Loeffler states it in this form.
+
+\begin{conjecture}[{Calegari; \cite[\S1 and footnote~1]{Smi04}, \cite[\S3]{Loe07}}]\label{conj:cal}\nolean{the conjecture, which Theorem 1.2 proves}
+The slopes of $U_3$ acting on $3$-adic overconvergent cusp forms of tame level~$1$ and weight~$0$ are $2i+2v_3\bigl((2i)!/i!\bigr)$, $i\ge1$, each with multiplicity one.
+\end{conjecture}
+
+Smithline writes the $i$-th slope as $v_3\bigl((2i)!\,(6i)!/(i!)^2\bigr)$, the same number. The theorem is the following.
+
+\begin{theorem}\label{thm:main}\lean{CalegariSlopes.Final.calegari_conjecture_overconvergent, CalegariSlopes.Spectral.calegari_conjecture_overconvergent_of, CalegariSlopes.Bridge.jhyp_Sol, CalegariSlopes.Bridge.c4_Sol}
+There are $\lambda_1,\lambda_2,\ldots\in\Cp$ with $|\lambda_i|=3^{-\sig_i}$ such that, for every $\mu\in\Cp$ with $\mu\ne0$, the space $\Sd[\mu]$ is finite dimensional over $\Cp$, of dimension $\#\{i\ge1:\lambda_i=\mu\}$.
+\end{theorem}
+
+The sequence $\sig$ is strictly increasing (Lemma~\ref{lem:gap}), so the $\lambda_i$ are pairwise distinct and every $\Sd[\mu]$ has dimension $0$ or~$1$. Hence Conjecture~\ref{conj:cal} holds: the slopes of $U_3$ on $\Sd$, counted with algebraic multiplicity, are $\sig_1,\sig_2,\ldots$, each once. The first twelve are
+\[
+\sig_1,\ldots,\sig_{12}=2,\ 6,\ 8,\ 10,\ 16,\ 18,\ 20,\ 24,\ 26,\ 28,\ 32,\ 34 .
+\]
+The gaps $\sig_{i+1}-\sig_i=2+2v(2i+1)$ are $2$ except when $3\mid 2i+1$.
+
+\subsection*{What was known}
+Smithline found that the matrix of $U_3$ in a basis of powers of a uniformizer of $X_0(3)$ is the coefficient array of a rational function of two variables \cite[\S4]{Smi04}, \cite{Smi00}; from it he computed about a hundred coefficients of the characteristic series of $U_3$, and he proved that its Newton polygon lies on or above the parabola through the points $(n,3n(n-1)/2+2n)$ and meets it exactly at the abscissae $n=(3^k-1)/2$, $k\ge0$ \cite[Proposition~4.2 and Theorem~4.3]{Smi04}. This fixes the sums of the first $n$ slopes at those $n$ only. Loeffler showed that the basis is orthonormal on the $r$-overconvergent region, expressed the rational function through a polynomial $I_p$ from Smithline's thesis for $p\in\{2,3,5,7,13\}$, and wrote the resulting recurrences out for $p=2$ and $p=3$ \cite[\S2]{Loe07}. For $p=2$, Buzzard and Calegari found explicit hypergeometric factors $A$, $D$, $B$ of the matrix $u=ADB$, with $A$ lower and $B$ upper unitriangular and congruent to the identity modulo~$2$, proved $ADB=u$ with Dougall's ${}_7F_6$ summation, and deduced that the slopes are the valuations of the diagonal entries of $D$, namely $1+2v_2((3i)!/i!)$ \cite[\S2]{BC05}. Loeffler conjectured such a factorization at $p=3$ and $p=5$, with the diagonal of $D$ given explicitly, and noted that by \cite[Lemma~5]{BC05} it would give Calegari's formulas \cite[Conjecture~3.1]{Loe07}; computations suggested that the entries of $A$ and $B$ are not hypergeometric terms. He also proved that a matrix $ADB$ acting on null sequences, with $A$ and $B$ integral and congruent to the identity and $D$ diagonal with strictly increasing valuations, is diagonalized by a matrix congruent to the identity \cite[\S6]{Loe07}. In an unpublished note \cite{Loe08} he then wrote down explicit $A$ and $B$ at $p=3$ as single sums of hypergeometric terms, proved that they are integral and unipotent modulo~$3$ (his Lemma~3.1), and found by creative telescoping \cite[Chapter~6]{PWZ96} a recurrence of order two in each index for every term $A_{ip}D_pB_{pj}$; the identity itself needed a recurrence in the middle index~$p$, which he estimated to be out of reach. Loeffler observed that Calegari's formula appears to agree with Buzzard's combinatorial recipe for slopes \cite[\S3]{Loe07}, \cite{Buz05}, and Bergdall and Pollack showed that the ghost series at $p=3$, tame level~$1$ and weight~$0$ has the slopes $2i+2v_3((2i)!/i!)$, each once \cite[\S3]{BP16}. Their ghost conjecture predicts that these are the slopes of $U_3$ on the overconvergent cusp forms of this weight and level, as $3$ is $\mathrm{SL}_2(\Z)$-regular, so Theorem~\ref{thm:main} proves the ghost conjecture at $p=3$, tame level~$1$ and weight~$0$. Liu, Truong, Xiao and Zhao proved the ghost conjecture for $p\ge11$ on the forms with residual Galois representation $\bar r$ absolutely irreducible and $\bar r$ reducible and very generic on a decomposition group at~$p$ \cite{LTXZ23}; this leaves out $p=3$. The case $p=5$ of Loeffler's conjecture, with slopes $i+2v_5((3i)!/i!)$, is open.
+
+\subsection*{The method}
+The proof has four steps.
+\begin{enumerate}
+\item \emph{The matrix} (Section~\ref{sec:qside}). Let $\cE=\tfrac12\bigl(3E_2(q^3)-E_2(q)\bigr)$ and let $g=27q+O(q^2)$ be the solution of $q\,dg/dq=\cE g$. From Ramanujan's differential equations for $E_2$, $E_4$, $E_6$ and a uniqueness lemma for linear systems of differential equations in $\Q[[q]]$, we prove $27(1+g)(1+9g)^3\jinv=g$ and $U(g^j)=\sum_iu_{ij}g^i$ for every $j\ge1$, where $u_{ij}$ are the coefficients of Loeffler's rational function. So $u=(u_{ij})$ is the matrix of $U$ in the basis $g,g^2,\ldots$, and the $q$-expansions of $\Sd$ lie among the series $\sum_ja_jg^j$ with $v(a_j)+sj\to+\infty$ for some $s<3$. What is left is a statement about the matrix~$u$.
+\item \emph{Loeffler's identity} (Sections~\ref{sec:factors} and~\ref{sec:adb}). We prove $u=ADB$ with Loeffler's $A$, $D$, $B$. Multiplied by $i$, the identity says that the generating function of $iu_{ij}$ is $\sum_p pD_p\,b_p(x)b_p(y)$, where $b_p$ is the $p$-th row of~$B$. Loeffler's recurrence in the column index for the $p$-th row of~$B$ has coefficients affine in~$p^2$, so the rows are eigenvectors of one pencil $L_0+p^2L_1$, and the operator $L_0\otimes L_1-L_1\otimes L_0$ kills every term of the sum, whatever the weights $pD_p$. The rational function satisfies the same partial differential equation, and the weights are fixed by one corner coefficient each. What is left is a contraction argument on the factors.
+\item \emph{The eigenvectors} (Section~\ref{sec:spectral}). Since $u=ADB$ with $C=BA$ congruent to the identity, the eigenvalue problem for $u$ on the space $\Lc$ of null sequences becomes a fixed point problem for $DC$, and a contraction with factor $1/3$ gives an eigenvector $x_n$ with eigenvalue $\lambda_n$, $|\lambda_n|=|D_n|=3^{-\sig_n}$, for each $n$. The $x_n$ are close to the unit vectors, so they form a basis of $\Lc$ in which $u$ is diagonal. A bound on the entries of $u$ shows that every generalized eigenvector in a space of radius $s<3$ already lies in~$\Lc$. What is left is to translate back to $q$-expansions.
+\item \emph{The assembly} (Section~\ref{sec:assembly}) combines the three steps.
+\end{enumerate}
+The pencil of step~2 replaces the summation formula that closes the case $p=2$, and no recurrence in $p$ is needed; comparing both sides through one annihilating operator is Bateman's method for the product and bilinear expansions of Jacobi polynomials \cite[\S2]{Koo74}. Given the factorization, parts of step~3 are Loeffler's diagonalization theorem, which he proves with Newton polygons and Serre's theory of completely continuous operators; here the eigenvalues are constructed by the contraction, in the style of Dwork, and the radius bound shows that they are all. Section~\ref{sec:fredholm} adds the matrix form of the result: the sum $c_n$ of the principal minors of order $n$ of $u$ has valuation $\sig_1+\cdots+\sig_n$ for every~$n$ (Corollary~\ref{cor:fredholm}). Section~\ref{sec:loeffler} proves the matrix form of Loeffler's conjecture on the factorization at the radii $r$ near $1/2$: the factorization of the matrices $u^{(r)}=(\gamma^{j-i}u_{ij})$, the exact intervals of~$r$ on which its factors are integral and congruent to the identity, and the spectral expansion of $u^{(r)}$ on null sequences for $1/3<r<2/3$ (Lemma~\ref{lem:super}, Theorem~\ref{thm:loeffler} and Corollary~\ref{cor:expansion}); letting $r$ tend to $1/3$ and $2/3$ gives $v(x_{n,i})\ge|i-n|$ for the eigenvectors (Corollary~\ref{cor:grading}).
+
+\subsection*{The formalization}
+Theorem~\ref{thm:main} is proved in Lean~4 with Mathlib from the definitions of this introduction, with no hypothesis and only the standard axioms, and so are the numbered statements of Sections~\ref{sec:assembly} to~\ref{sec:loeffler} and of Appendix~\ref{app:cert}. Ramanujan's equations enter through a third-party Lean proof of them on $q$-expansions. Each formalized proof ends with the name of its main Lean declaration. Section~\ref{sec:lean} describes the formal proof, and the repository lists, for every numbered statement, the declarations of its formal proof.
+
+Section~\ref{sec:assembly} proves Theorem~\ref{thm:main} from Theorems~\ref{thm:qside}, \ref{thm:adb} and~\ref{thm:spectral} and Proposition~\ref{prop:bridge}; Sections~\ref{sec:qside} to~\ref{sec:spectral} prove them, Section~\ref{sec:fredholm} gives the matrix form, Section~\ref{sec:loeffler} the other radii, and Section~\ref{sec:lean} describes the formal proof.
+
+\section{The proof of Theorem~\ref{thm:main}}\label{sec:assembly}
+
+This section defines the matrix $u$, Loeffler's factors and the basis $g^j$, states the four results the proof rests on, and proves Theorem~\ref{thm:main} from them.
+
+\subsection*{Power series}
+On power series $f=\sum_na_nq^n$ we use the derivation $\theta f=q\,df/dq=\sum_n na_nq^n$, the ring homomorphism $Vf(q)=f(q^3)$, for which $\theta V=3V\theta$, and the operator $U$ of the introduction, now on $\Q[[q]]$ as well as on $\Cp[[q]]$. Let $E_2=1-24\sum_{n\ge1}\sigma_1(n)q^n$ and
+\[
+\cE=\tfrac12\bigl(3VE_2-E_2\bigr)=1+12q+36q^2+12q^3+84q^4+\cdots,
+\]
+the Eisenstein series of weight~$2$ on $\Gamma_0(3)$. Define $g=\sum_{n\ge1}g_nq^n\in\Q[[q]]$ by $g_1=27$ and $(n-1)g_n=\sum_{k=1}^{n-1}\cE_k\,g_{n-k}$ for $n\ge2$, where $\cE_k$ is the coefficient of $q^k$ in~$\cE$. Since $\cE_0=1$, the coefficient of $q^n$ in $\cE g$ is $g_n+\sum_{k=1}^{n-1}\cE_kg_{n-k}=ng_n$ for $n\ge1$, so
+\begin{equation}\label{eq:gode}
+\theta g=\cE g,\qquad g=27q+324q^2+2430q^3+13716q^4+\cdots.
+\end{equation} The series $g$ is Loeffler's basis function at radius $r=1/2$, $g=27q\prod_{n\ge1}(1-q^{3n})^{12}/(1-q^n)^{12}$ \cite[\S1]{Loe08}: both sides start with $27q$ and have logarithmic derivative $\cE$, since $\theta\Delta=E_2\Delta$. The proof does not use this product.
+
+\subsection*{The matrix}
+Let
+\begin{align*}
+N(x,y)&=90xy+324x^2y+648xy^2+243x^3y+486x^2y^2+729xy^3,\\
+Q(x,y)&=1-270xy-972xy(x+y)-729xy(x^2+xy+y^2),
+\end{align*}
+and let $u_{ij}$, for $i,j\ge0$, be the coefficient of $x^iy^j$ in the power series $F=N/Q\in\Q[[x,y]]$; so $u_{ij}=0$ when $i=0$ or $j=0$. This is Loeffler's rational function \cite[\S2]{Loe08}. Row index first: the first column is $u_{11},u_{21},u_{31}=90,324,243$, and $u_{12}=648\ne u_{21}=324$. Theorem~\ref{thm:qside}(b) below says that column $j$ lists the coefficients of $U(g^j)$ in the basis $g^i$; for instance $U(g)=90g+324g^2+243g^3$.
+
+\subsection*{Loeffler's factors}
+For integers $i,k\ge1$ and $t\ge0$ let
+\[
+r_t(i)=\frac{(3i+3t)!\,i!}{3^t\,(3i)!\,(i+t)!},\qquad
+\mu(i,k,t)=\frac{2k\,i!\,k!\,(2i+2t)!\,(2i+t-1)!}{(i+k)!\,(i-k+2t)!\,(2i)!\,(k-i-t)!\,(i-t)!\,(i+t)!},
+\]
+with $\mu(i,k,t)=0$ when $i-k+2t$, $k-i-t$ or $i-t$ is negative, and
+\[
+B_{ik}=\sum_{t=0}^{i}\frac{3^{2t}\mu(i,k,t)}{r_t(i)},\qquad A_{ik}=\frac{k}{i}B_{ki},\qquad D_k=\frac{3^{3k}\,(6k)!\,(2k)!\,k!}{2\,(3k)!^3}
+\]
+\cite[\S3]{Loe08}. These are rational numbers; $D_1,D_2,D_3=90,\ 112266/5,\ 79748955/14$, and the first two rows of $B$ are $(1,36/5,81/10)$ and $(0,1,81/7,3060/77,4050/77,3645/154)$. By Lemma~\ref{lem:AB}, $B$ is upper and $A$ lower unitriangular.
+
+\subsection*{Sequences}
+A sequence is a family $a=(a_j)_{j\ge1}$ in $\Cp$. For real $s$ let $\cL_s$ be the space of sequences with $v(a_j)+sj\to+\infty$; so $\cL_s\subseteq\cL_{s'}$ for $s\le s'$, and $\Lc$ is the space of sequences tending to~$0$, with the norm $\|a\|=\max_j|a_j|$. The matrix $u$ acts on every sequence by $(ua)_i=\sum_{j=1}^{3i}u_{ij}a_j$, which is the whole sum $\sum_ju_{ij}a_j$ since $u_{ij}=0$ for $j>3i$ (Lemma~\ref{lem:u}). For a sequence $a$ put
+\[
+\Phi(a)=\sum_{j\ge1}a_jg^j\in\Cp[[q]],
+\]
+the coefficient of $q^n$ being the finite sum over $j\le n$, as $g^j=O(q^j)$.
+
+\subsection*{The four results}
+The first result says that $g$ is a coordinate on the overconvergent region and that $u$ is the matrix of $U$ in the basis $g^j$. It is proved in Section~\ref{sec:qside} from Ramanujan's equations.
+
+\begin{theorem}\label{thm:qside}\lean{CalegariSlopes.Bridge.jhyp_Sol, CalegariSlopes.Bridge.c4_Sol}
+\begin{enumerate}
+\item[(a)] $27(1+g)(1+9g)^3\,\jinv=g$ in $\Q[[q]]$.
+\item[(b)] For every $j\ge1$, $U(g^j)=\sum_{i=1}^{3j}u_{ij}\,g^i$ in $\Q[[q]]$.
+\end{enumerate}
+\end{theorem}
+
+Through $\Phi$, Theorem~\ref{thm:qside} moves the problem to sequences. Part (b) gives the action of $U$, part (a) the description of $\Sd$; Section~\ref{sec:qside} derives the following from it.
+
+\begin{proposition}\label{prop:bridge}\lean{CalegariSlopes.Spectral.BR1, CalegariSlopes.Spectral.U3_Phi, CalegariSlopes.Spectral.Phi_eq_zero, CalegariSlopes.Spectral.BR2}
+\begin{enumerate}
+\item[(i)] $U\Phi(a)=\Phi(ua)$ for every sequence $a$, and $\Phi(a)=0$ only for $a=0$.
+\item[(ii)] Every $F\in\Sd$ is $\Phi(a)$ for some real $s<3$ and some $a\in\cL_s$.
+\item[(iii)] $\Phi(a)\in\Sd$ for every $a\in\Lc$.
+\end{enumerate}
+\end{proposition}
+
+The second result is Loeffler's identity, proved in Section~\ref{sec:adb}.
+
+\begin{theorem}\label{thm:adb}\lean{CalegariSlopes.ADB.adb, CalegariSlopes.ADB.S_eq_V}
+For all $i,j\ge1$, $\displaystyle\sum_{p=1}^{\min(i,j)}A_{ip}\,D_p\,B_{pj}=u_{ij}$.
+\end{theorem}
+
+The third result describes the generalized eigenvectors of $u$ on the spaces $\cL_s$, $s<3$. It is proved in Section~\ref{sec:spectral}, from Theorem~\ref{thm:adb} and the bounds of Section~\ref{sec:factors}. For a sequence $b\in\Lc$ and sequences $x_1,x_2,\ldots$ with $|x_{n,i}|\le1$ for all $n,i$, we write $\sum_nb_nx_n$ for the sequence whose $i$-th coordinate is the convergent series $\sum_nb_nx_{n,i}$.
+
+\begin{theorem}\label{thm:spectral}\lean{CalegariSlopes.Spectral.exists_eigenFamily, CalegariSlopes.Spectral.EigenFamily.diag, CalegariSlopes.Spectral.isC0_of_InS}
+There are sequences $x_1,x_2,\ldots\in\Lc$ and numbers $\lambda_1,\lambda_2,\ldots\in\Cp$ with the following properties.
+\begin{enumerate}
+\item[(a)] $|x_{n,i}-\delta_{ni}|\le1/3$ for all $n,i\ge1$, $ux_n=\lambda_nx_n$, and $|\lambda_n|=3^{-\sig_n}$, for every $n\ge1$.
+\item[(b)] Let $\mu\in\Cp$, $\mu\ne0$, $\ell\ge1$ and $a\in\Lc$ with $(u-\mu)^\ell a=0$. Then $a=\sum_nb_nx_n$ for some $b\in\Lc$ with $b_n=0$ whenever $\lambda_n\ne\mu$.
+\item[(c)] Let $s<3$, $a\in\cL_s$, $\mu\in\Cp$ with $\mu\ne0$, and $\ell\ge1$ with $(u-\mu)^\ell a=0$. Then $a\in\Lc$.
+\end{enumerate}
+\end{theorem}
+
+Here $\delta_{ni}$ is $1$ if $n=i$ and $0$ otherwise. Part (c) is where the strict inequality $s<3$ of Proposition~\ref{prop:bridge}(ii) matters: at $s=3$ the bound of Section~\ref{sec:spectral} no longer improves the radius.
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+Let $x_n$ and $\lambda_n$ be as in Theorem~\ref{thm:spectral}, so $|\lambda_n|=3^{-\sig_n}$. The $\lambda_n$ are pairwise distinct, since $\sig$ is strictly increasing (Lemma~\ref{lem:gap}). Fix $\mu\in\Cp$ with $\mu\ne0$, and let $F\in\Sd[\mu]$, with $(U-\mu)^\ell F=0$. By Proposition~\ref{prop:bridge}(ii), $F=\Phi(a)$ with $a\in\cL_s$ for some $s<3$. By Proposition~\ref{prop:bridge}(i) and the linearity of $\Phi$, $(U-\mu)^\ell\Phi(a)=\Phi\bigl((u-\mu)^\ell a\bigr)$, so $(u-\mu)^\ell a=0$; this uses (i) on all sequences, so the intermediate series $(U-\mu)^kF$ need not lie in $\Sd$. By Theorem~\ref{thm:spectral}(c), $a\in\Lc$, and by Theorem~\ref{thm:spectral}(b), $a=\sum_nb_nx_n$ with $b_n=0$ whenever $\lambda_n\ne\mu$. If $\mu$ is none of the $\lambda_n$, then $a=0$ and $F=0$. If $\mu=\lambda_m$, then $m$ is unique and $a=b_mx_m$, so $F=b_m\Phi(x_m)$. Conversely $\Phi(x_m)\in\Sd$ by Proposition~\ref{prop:bridge}(iii), $U\Phi(x_m)=\Phi(ux_m)=\lambda_m\Phi(x_m)$ by Proposition~\ref{prop:bridge}(i), and $\Phi(x_m)\ne0$ because $x_m\ne0$ (its $m$-th coordinate has $|x_{m,m}-1|\le1/3$). Hence $\Sd[\mu]=\Cp\,\Phi(x_m)$ if $\mu=\lambda_m$, and $\Sd[\mu]=0$ if $\mu$ is none of the $\lambda_n$. In both cases $\Sd[\mu]$ is finite dimensional, of dimension $\#\{i\ge1:\lambda_i=\mu\}$. This is \decl{CalegariSlopes.Final.calegari_conjecture_overconvergent} in the formalization.
+\end{proof}
+
+\section{The matrix and Loeffler's factors}\label{sec:factors}
+
+This section collects the properties of $u$, $A$, $B$, $D$ and $\sig$ that the later sections use: the band and $3$-adic bounds of $u$ (Lemma~\ref{lem:u}), used in Sections~\ref{sec:qside} and~\ref{sec:spectral}; Loeffler's bounds on $A$ and $B$ (Lemma~\ref{lem:AB}) and the valuation of $D_k$ (Lemma~\ref{lem:D}), used in Sections~\ref{sec:adb} to~\ref{sec:fredholm}; and the gaps between the slopes (Lemma~\ref{lem:gap}).
+
+The first lemma is read off the two polynomials $N$ and $Q$. Part (b) makes every sum $\sum_ju_{ij}a_j$ finite; parts (a) and (d) give the estimates of Sections~\ref{sec:spectral} and~\ref{sec:fredholm}; part (c) is a corner value used in Section~\ref{sec:adb}.
+
+\begin{lemma}\label{lem:u}\lean{CalegariSlopes.Newton.u_dvd, CalegariSlopes.ADB.u_eq_zero_of_gt, CalegariSlopes.Spectral.u_eq_zero_of_lt, CalegariSlopes.ADB.u_corner, CalegariSlopes.Spectral.norm_u_sq_le}
+For all $i,j\ge1$:
+\begin{enumerate}
+\item[(a)] $u_{ij}$ is an integer divisible by $3^{i+j}$;
+\item[(b)] $u_{ij}=0$ unless $j/3\le i\le3j$;
+\item[(c)] $3u_{3j,j}=3^{6j}$;
+\item[(d)] $2v(u_{ij})\ge3(i+j)-2$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(a) $N(x/3,y/3)=10xy+12x^2y+24xy^2+3x^3y+6x^2y^2+9xy^3$ and $Q(x/3,y/3)=1-30xy-36xy(x+y)-9xy(x^2+xy+y^2)$ have integer coefficients and $Q(0,0)=1$, so $F(x/3,y/3)\in\Z[[x,y]]$; its coefficient of $x^iy^j$ is $u_{ij}/3^{i+j}$. (b) Every monomial $x^ay^b$ of $N$ and of $1-Q$ has $a\le3b$ and $b\le3a$, and these conditions are stable under products and sums. (c) The monomials with $a=3b$ are $243x^3y$ in $N$ and $729x^3y$ in $1-Q$, so the part of $F$ with $i=3j$ is $243x^3y/(1-729x^3y)$, and $u_{3j,j}=243\cdot729^{j-1}=3^{6j-1}$. (d) For $f=\sum f_{ab}x^ay^b$ put $\nu(f)=\inf_{a,b}(2v(f_{ab})-3(a+b))$. Then $\nu(f+f')\ge\min(\nu(f),\nu(f'))$ and $\nu(ff')\ge\nu(f)+\nu(f')$. The monomials of $1-Q$ give the values $2\cdot3-6=0$ for $270xy$, $2\cdot5-9=1$ for $972x^2y$ and $972xy^2$, $2\cdot6-12=0$ for the three terms $729x^ay^b$, so $\nu(1-Q)\ge0$, and every monomial of $1-Q$ has degree at least~$2$; hence $1/Q=\sum_k(1-Q)^k$ has $\nu(1/Q)\ge0$. The monomials of $N$ give $-2,-1,-1,-2,-2,0$, so $\nu(N)=-2$ and $\nu(F)\ge-2$. This is \decl{CalegariSlopes.Newton.u_dvd} in the formalization.
+\end{proof}
+
+The next lemma is Loeffler's \cite[Lemma~3.1]{Loe08}, in the graded form that Sections~\ref{sec:spectral} and~\ref{sec:fredholm} need; the proof is his. In the form used later: $v(A_{st})\ge s-t$ and $v(B_{ts})\ge s-t$ for all $s,t\ge1$, both entries being $0$ when $s<t$.
+
+\begin{lemma}[Loeffler]\label{lem:AB}\lean{CalegariSlopes.Newton.norm_B_le, CalegariSlopes.ADB.B_self, CalegariSlopes.ADB.B_eq_zero_of_lt, CalegariSlopes.ADB.B_eq_zero_of_gt, CalegariSlopes.Newton.norm_A_le, CalegariSlopes.Newton.A_self, CalegariSlopes.Newton.A_eq_zero_of_lt}
+For all $i,k\ge1$: $B_{ii}=1$; $B_{ik}=0$ unless $i\le k\le3i$; $v(B_{ik})\ge k-i$. Hence $A_{ii}=1$, $A_{ki}=0$ unless $i\le k\le3i$, and $v(A_{ki})\ge k-i$.
+\end{lemma}
+
+\begin{proof}
+If $\mu(i,k,t)\ne0$ then $i-k+2t\ge0$, $k-i-t\ge0$ and $t\le i$; adding the first two gives $t\ge0$, and then $i\le i+t\le k\le i+2t\le3i$. At $k=i$ only $t=0$ remains, and $\mu(i,i,0)=2i\,(2i-1)!/(2i)!=1$, $r_0(i)=1$, so $B_{ii}=1$. The number $r_t(i)$ is the product of the integers $3i+s$, $1\le s\le3t$, $3\nmid s$, so it is prime to~$3$. Let $k>i$ and let $t$ index a nonzero term. Then $2t\ge k-i\ge1$, so $t\ge1$, and
+\[
+\frac{\mu(i,k,t)}{k}=2\binom{2i+2t}{i+k}\cdot\frac{(2i+t-1)!}{(2i)!}\cdot\binom{k}{i+t}\cdot\frac{i!}{(i-t)!}
+\]
+is a product of integers, the second factor because $t\ge1$. So each term has valuation at least $2t\ge k-i$, and $v(B_{ik})\ge v(B_{ik}/k)\ge k-i$. The statements for $A_{ki}=(i/k)B_{ik}$ follow, since $v(i)\ge0$ and $v(B_{ik}/k)\ge k-i$. This is \decl{CalegariSlopes.Newton.norm_B_le} in the formalization.
+\end{proof}
+
+The diagonal of $D$ carries the slopes.
+
+\begin{lemma}\label{lem:D}\lean{CalegariSlopes.Newton.padicValRat_D, CalegariSlopes.Newton.norm_D, CalegariSlopes.Newton.D_pos}
+For $k\ge1$, $D_k$ is a positive rational number and $v(D_k)=\sig_k$.
+\end{lemma}
+
+\begin{proof}
+By Legendre's formula $v(m!)=\sum_{e\ge1}\lfloor m/3^e\rfloor$, so $v((3m)!)=m+v(m!)$ for every $m\ge0$. Hence $v(D_k)=3k+v((6k)!)+v((2k)!)+v(k!)-3v((3k)!)=3k+\bigl(2k+v((2k)!)\bigr)+v((2k)!)+v(k!)-3\bigl(k+v(k!)\bigr)=2k+2v\bigl((2k)!/k!\bigr)$. This is \decl{CalegariSlopes.Newton.padicValRat_D} in the formalization.
+\end{proof}
+
+The gaps between consecutive slopes are at least~$2$. Their only uses are that $\sig_i\ne\sig_n$ for $i\ne n$ (Sections~\ref{sec:assembly} and~\ref{sec:spectral}) and the counting of Section~\ref{sec:fredholm}, where $\omega_k=\sig_k-2k$ enters.
+
+\begin{lemma}\label{lem:gap}\lean{CalegariSlopes.Spectral.slope_strictMono, CalegariSlopes.Newton.wslope_mono}
+For $k\ge1$, $\sig_{k+1}-\sig_k=2+2v(2k+1)\ge2$. In particular $\sig$ is strictly increasing, and $\omega_k=\sig_k-2k=2v((2k)!/k!)$ is nonnegative and nondecreasing.
+\end{lemma}
+
+\begin{proof}
+$(2k+2)!/(k+1)!=2(2k+1)\cdot(2k)!/k!$ and $v(2)=0$. This is \decl{CalegariSlopes.Spectral.slope_strictMono} in the formalization.
+\end{proof}
+
+\section{The matrix of \texorpdfstring{$U$}{U} in the basis \texorpdfstring{$g^j$}{g\^{}j}}\label{sec:qside}
+
+This section proves Theorem~\ref{thm:qside} and Proposition~\ref{prop:bridge}. The only input from the theory of modular forms is Ramanujan's system of differential equations for $E_2$, $E_4$, $E_6$ on $q$-expansions; the rest is algebra in $\Q[[q]]$. The identities of Theorems~\ref{thm:level3} and~\ref{thm:level9} below are classical. In terms of the cubic theta functions $a$, $b$, $c$ of the Borweins, with $\cE=a(q)^2$ and $g=c^3/b^3$, Theorem~\ref{thm:level3} is \cite[Theorems~4.2 to~4.5]{BBG95} and \cite[Theorem~4.31]{Coo17}; Theorem~\ref{thm:level9} is \cite[Theorems~9.2 and~9.4]{Coo17}, parts of it are \cite[Lemma~2.4]{Roe14}, and it follows from \cite[(2.9) and Theorem~3.1]{BBG95}; Theorem~\ref{thm:qside}(a) is \cite[Theorem~4.32]{Coo17}; and Theorem~\ref{thm:qside}(b) is the statement that Loeffler's rational function generates the matrix of $U$ on the powers of~$g$ \cite[\S4]{Smi04}, \cite[\S2]{Loe07}. We derive all of them from Ramanujan's equations by a uniqueness lemma for linear differential systems in $\Q[[q]]$ (Lemma~\ref{lem:U}): Theorem~\ref{thm:level3} gives Theorem~\ref{thm:qside}(a), and Theorem~\ref{thm:level9} with Lemmas~\ref{lem:ring} and~\ref{lem:col} gives Theorem~\ref{thm:qside}(b). Huber derives the parametrizations behind the first and third identities of Theorem~\ref{thm:level3} from Ramanujan's equations by analytic means \cite[\S4]{Hub09}.
+
+\subsection{Ramanujan's equations and two lemmas on power series}
+The proofs of Theorems~\ref{thm:level3} and~\ref{thm:level9} start from Ramanujan's equations.
+
+\begin{theorem}[Ramanujan \cite{Ram16}]\label{thm:ram}\lean{CalegariSlopes.Bridge.ram_E2, CalegariSlopes.Bridge.ram_E4, CalegariSlopes.Bridge.ram_E6}
+In $\Q[[q]]$,
+\[
+12\,\theta E_2=E_2^2-E_4,\qquad 3\,\theta E_4=E_2E_4-E_6,\qquad 2\,\theta E_6=E_2E_6-E_4^2 .
+\]
+\end{theorem}
+
+Since $\theta V=3V\theta$, applying $V$ gives
+\begin{equation}\label{eq:ramV}
+4\,\theta VE_2=(VE_2)^2-VE_4,\qquad \theta VE_4=VE_2\,VE_4-VE_6,\qquad 2\,\theta VE_6=3\bigl(VE_2\,VE_6-(VE_4)^2\bigr).
+\end{equation}
+
+The uniqueness lemma is the standard non-resonance argument at a regular singular point, for systems; \cite[\S4.2, Proposition~4.3]{BLS17} states it for one linear differential equation. We state it with a weight $\chi$, so that systems whose coefficients have a denominator can be written with power series coefficients.
+
+\begin{lemma}\label{lem:U}\lean{CalegariSlopes.Bridge.lemmaU}
+Let $k\ge1$, $\chi\in\Q[[q]]$, $N\in\mathrm{M}_k(\Q[[q]])$ and $e=(e_1,\ldots,e_k)\in\Q[[q]]^k$ with $\chi\,\theta e_i=\sum_jN_{ij}e_j$ for every~$i$. Let $\chi(0)$ and $N(0)$ be the constant terms, and let $n_0\ge0$ be such that $\det\bigl(n\,\chi(0)\,I-N(0)\bigr)\ne0$ for every integer $n\ge n_0$. If the coefficients of $q^m$ in $e_1,\ldots,e_k$ vanish for every $m<n_0$, then $e=0$.
+\end{lemma}
+
+\begin{proof}
+Let $n\ge n_0$ and assume that the coefficients of $q^m$ in $e$ vanish for $m<n$. Let $\eta\in\Q^k$ be the vector of coefficients of $q^n$. In $\chi\,\theta e_i$ the coefficient of $q^n$ is $\sum_{a+b=n}\chi_a\,b\,(e_i)_b=n\,\chi(0)\,\eta_i$, and in $\sum_jN_{ij}e_j$ it is $\sum_jN_{ij}(0)\eta_j$, since every other term has a factor $(e_j)_b$ with $b<n$. So $(n\,\chi(0)\,I-N(0))\eta=0$, hence $\eta=0$, and the lemma follows by induction on~$n$. This is \decl{CalegariSlopes.Bridge.lemmaU} in the formalization.
+\end{proof}
+
+The entries of $N$ may involve the $e_j$ themselves; only $N(0)$ enters. The second lemma defines series by a first order equation, as $g$ is defined in Section~\ref{sec:assembly}.
+
+\begin{lemma}\label{lem:sol}\lean{CalegariSlopes.Bridge.Level9.coeff_Sol_V3, CalegariSlopes.Bridge.theta_Sol}
+Let $b\in\Q[[q]]$ with constant term $1$ and $c\in\Q$, and let $y=\Sol(b,c)$ be the series with $y_0=0$, $y_1=c$ and $(n-1)y_n=\sum_{k=1}^{n-1}b_ky_{n-k}$ for $n\ge2$. Then $\theta y=by$. If moreover $b=Vb'$ for some $b'\in\Q[[q]]$, then $y_n=0$ for every $n\not\equiv1\pmod 3$.
+\end{lemma}
+
+\begin{proof}
+The first claim is the computation that gave~\eqref{eq:gode}. For the second, let $n\not\equiv1\pmod3$ and assume $y_m=0$ for every $m<n$ with $m\not\equiv1\pmod3$. If $n=0$ then $y_n=0$; if $n\ge2$, then in $\sum_{k=1}^{n-1}b_ky_{n-k}$ a term with $b_k\ne0$ has $3\mid k$, so $n-k\not\equiv1\pmod 3$ and $y_{n-k}=0$. This is \decl{CalegariSlopes.Bridge.Level9.coeff_Sol_V3} in the formalization.
+\end{proof}
+
+So $g=\Sol(\cE,27)$, where $\cE=\frac12(3VE_2-E_2)$ as in Section~\ref{sec:assembly}.
+
+\subsection{Level three}
+
+The proof of Theorem~\ref{thm:qside}(a) at the end of this subsection, and that of Theorem~\ref{thm:level9}(c), use the following four identities.
+
+\begin{theorem}\label{thm:level3}\lean{CalegariSlopes.Bridge.theoremA}
+In $\Q[[q]]$,
+\begin{align*}
+(1+g)\,E_4&=\cE^2(1+9g), & 9(1+g)\,VE_4&=\cE^2(9+g),\\
+(1+g)^2E_6&=\cE^3(1-18g-27g^2), & 27(1+g)^2\,VE_6&=\cE^3(27+18g-g^2).
+\end{align*}
+\end{theorem}
+
+\begin{proof}
+Let $\delta_1,\ldots,\delta_4$ be the four differences of the two sides (left minus right), in the order $(1+g)E_4$, $9(1+g)VE_4$, $(1+g)^2E_6$, $27(1+g)^2VE_6$. By Theorem~\ref{thm:ram}, \eqref{eq:ramV}, $\theta g=\cE g$ and the Leibniz rule, $(1+g)\,\theta\delta_i=\sum_jN_{ij}\delta_j$ with
+\[
+N=\begin{pmatrix}
+\frac{(5g+9)E_2+3(3g-1)VE_2}{24} & \frac{(9g+1)\cE}{12} & -\frac13 & 0\\[2pt]
+-\frac{(g+9)\cE}{12} & \frac{-(13g+9)E_2+3(21g+17)VE_2}{24} & 0 & -\frac13\\[2pt]
+-\frac{(45g^2+62g+9)\cE^2}{8}-\frac{(1+g)\delta_1}2 & -\frac{(27g^2+18g-1)\cE^2}{8} & \frac{(1-g)E_2+6g\,VE_2}{2} & 0\\[2pt]
+\frac{(g^2-18g-27)\cE^2}{8} & -\frac{(9g^2+62g+45)\cE^2}{8}-\frac{(1+g)\delta_2}2 & 0 & \frac{-2gE_2+3(3g+1)VE_2}{2}
+\end{pmatrix}.
+\]
+Each of these four identities is an identity between polynomials in $E_2,E_4,E_6,VE_2,VE_4,VE_6,g$, once $\theta$ of each of them is replaced by its value. At $q=0$ the series $E_2,E_4,E_6,VE_2,VE_4,VE_6,\cE$ are $1$ and $g$ is $0$, so
+\[
+N(0)=\begin{pmatrix}1/4&1/12&-1/3&0\\-3/4&7/4&0&-1/3\\-9/8&1/8&1/2&0\\-27/8&-45/8&0&3/2\end{pmatrix},\qquad \det\bigl(nI-N(0)\bigr)=n^2(n-1)(n-3).
+\]
+From $E_2=1-24q-72q^2-96q^3+\cdots$, $E_4=1+240q+2160q^2+6720q^3+\cdots$, $E_6=1-504q-16632q^2-122976q^3+\cdots$, $\cE=1+12q+36q^2+12q^3+\cdots$ and $g=27q+324q^2+2430q^3+\cdots$, the coefficients of $q^0,\ldots,q^3$ of $\delta_1,\ldots,\delta_4$ vanish. Lemma~\ref{lem:U} with $\chi=1+g$ and $n_0=4$ gives $\delta=0$. This is \decl{CalegariSlopes.Bridge.theoremA} in the formalization.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\textup{\ref{thm:qside}(a)}]
+By the first and third identities of Theorem~\ref{thm:level3}, $(1+g)^4E_4^3=(1+g)\cE^6(1+9g)^3$ and $(1+g)^4E_6^2=\cE^6(1-18g-27g^2)^2$. Since $(1+9g)^3(1+g)-(1-18g-27g^2)^2=64g$, we get $(1+g)^4(E_4^3-E_6^2)=64\,\cE^6g$, so $27(1+g)^4\Delta=\cE^6g$. Hence $(1+g)^4\cdot27(1+g)(1+9g)^3\Delta=(1+g)\cE^6(1+9g)^3\,g=(1+g)^4E_4^3\,g$. The series $1+g$ and $E_4$ have constant term~$1$, so they are units, and dividing by $(1+g)^4E_4^3$ gives $27(1+g)(1+9g)^3\jinv=g$. This is \decl{CalegariSlopes.Bridge.jhyp_Sol} in the formalization.
+\end{proof}
+
+\subsection{Level nine}\label{sec:level9}
+Let $b=V\bigl(\cE(1+g)^{-1}\bigr)$, a series in $q^3$ with constant term~$1$, so that $b\,(1+Vg)=V\cE$, and let $W=\Sol(b,3)$. Then $\theta W=bW$ (Lemma~\ref{lem:sol}), and $W=3q-15q^4+96q^7-594q^{10}+\cdots$.
+
+\begin{theorem}\label{thm:level9}\lean{CalegariSlopes.Bridge.Level9.I1_and, CalegariSlopes.Bridge.Level9.I3, CalegariSlopes.Bridge.Level9.I2}
+\begin{enumerate}
+\item[(a)] The coefficient of $q^n$ in $W$ vanishes unless $n\equiv1\pmod 3$.
+\item[(b)] $(1-W^3)\,Vg=W^3$.
+\item[(c)] $(1-W)^3g=9W(1+W+W^2)$ and $\cE=V\cE\,(1+2W)^2$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(a) is Lemma~\ref{lem:sol}, as $b$ is a series in $q^3$.
+
+(b) Let $\delta=(1-W^3)\,Vg-W^3$. Applying $V$ to $\theta g=\cE g$ gives $\theta Vg=3\,V\cE\,Vg$. With $\theta W=bW$ and $V\cE=b(1+Vg)$,
+\[
+\theta\delta=-3bW^3\,Vg+3\,b\,(1+Vg)(1-W^3)\,Vg-3bW^3=3\,b\,(1+Vg)\,\delta=3\,V\cE\,\delta .
+\]
+Here $k=1$, $\chi=1$, $N(0)=3$, and $Vg=27q^3+O(q^6)$, $W^3=27q^3+O(q^6)$, so $\delta=O(q^4)$. Lemma~\ref{lem:U} with $n_0=4$ gives $\delta=0$.
+
+(c) By (b), $(1-W^3)(1+Vg)=1$, so $b=V\cE\,(1-W^3)$ and $\theta W=V\cE\,(1-W^3)\,W$. From $2\cE=3VE_2-E_2$, Theorem~\ref{thm:ram}, \eqref{eq:ramV} and the first two identities of Theorem~\ref{thm:level3},
+\[
+6(1+g)\,\theta\cE=\cE\bigl((1+g)E_2+(3g-1)\cE\bigr),
+\]
+and applying $V$ and using (b), $2\,\theta V\cE=V\cE\bigl(VE_2+(4W^3-1)V\cE\bigr)$. Let $K=\cE-V\cE\,(1+2W)^2$ and $L=(1-W)^3g-9W(1+W+W^2)$. With $\theta g=\cE g$, these equations give, as identities between polynomials in $V^2E_2,V\cE,W,\cE,g$ (where $VE_2=3V^2E_2-2V\cE$ and $E_2=3VE_2-2\cE$),
+\[
+\chi\,\theta K=N_{11}K+N_{12}L,\qquad \chi\,\theta L=N_{21}K+N_{22}L,\qquad \chi=6(1+g)(1+2W)^3,
+\]
+where
+\begin{align*}
+N_{11}&=(1+g)\bigl(9\,V^2E_2\,(1+2W)^3+3\,\bigl(32V\cE\,W^5+32V\cE\,W^4+(40V\cE+4K)W^3\\
+&\qquad\qquad+16V\cE\,W^2+(6K-8V\cE)W-4V\cE-K\bigr)\bigr),\\
+N_{12}&=4\cE^2,\qquad N_{21}=54(1+g)(1+2W)^3\,W(1+W+W^2),\\
+N_{22}&=6(1+g)(1+2W)^3\bigl(\cE-3V\cE\,W(1+W+W^2)\bigr).
+\end{align*}
+Here $\chi(0)=6$ and
+\[
+N(0)=\begin{pmatrix}-3&4\\0&6\end{pmatrix},\qquad \det\bigl(6n\,I-N(0)\bigr)=18(2n+1)(n-1).
+\]
+Since $\cE=1+12q+O(q^2)$, $V\cE=1+O(q^3)$, $W=3q+O(q^4)$ and $g=27q+O(q^2)$, both $K$ and $L$ are $O(q^2)$. Lemma~\ref{lem:U} with $n_0=2$ gives $K=L=0$. This is \decl{CalegariSlopes.Bridge.Level9.I1_and} in the formalization.
+\end{proof}
+
+The two identities of (c) are proved together: the system for $K$ and $L$ does not split.
+
+\subsection{The action of \texorpdfstring{$U$}{U}}
+Three polynomial identities, consequences of Theorem~\ref{thm:level9}, express $g$, $g^2$ and $g^3$ through $W$ and $g'=Vg$.
+
+\begin{lemma}\label{lem:ring}\lean{CalegariSlopes.Bridge.Level9.ring_ME, CalegariSlopes.Bridge.Level9.ring_L1, CalegariSlopes.Bridge.Level9.ring_L2}
+Let $w,x,x'$ be elements of a commutative ring with $(1-w)^3x=9w(1+w+w^2)$ and $(1-w^3)x'=w^3$. Then
+\begin{align*}
+x&=\bigl(90x'+324x'^2+243x'^3\bigr)+w\bigl(9+171x'+405x'^2+243x'^3\bigr)\\
+&\qquad+w^2\bigl(36+279x'+486x'^2+243x'^3\bigr),\\
+x^2&=\bigl(648x'+486x'^2\bigr)+w\bigl(486x'+486x'^2\bigr)+w^2\bigl(81-162x'-243x'^2\bigr)\\
+&\qquad+\bigl(270x'+972x'^2+729x'^3\bigr)x,\\
+x^3&=729x'+\bigl(270x'+972x'^2+729x'^3\bigr)x^2+\bigl(972x'+729x'^2\bigr)x.
+\end{align*}
+\end{lemma}
+
+\begin{proof}
+The second hypothesis gives $(1-w^3)(1+x')=1$, so $1-w^3$ is a unit, and since $(1-w)^3(1+w+w^2)^3=(1-w^3)^3$ the first gives $(1-w^3)^3x=9w(1+w+w^2)^4$. Multiply the difference of the two sides of the $k$-th identity by $(1-w^3)^{3k}$ and substitute these two relations: what is left is a polynomial in $w$ with integer coefficients, and it is zero. This is \decl{CalegariSlopes.Bridge.Level9.ring_ME} in the formalization.
+\end{proof}
+
+The third identity is the modular equation of level~$3$ between $g$ and $Vg$. The columns of $u$ obey a recurrence read off $Q\,F=N$.
+
+\begin{lemma}\label{lem:col}\lean{CalegariSlopes.Bridge.Level9.isColRec_col, CalegariSlopes.Bridge.Level9.isColRec_S, CalegariSlopes.Bridge.Level9.IsColRec.unique}
+Let $S_j(x)=\sum_{i=1}^{3j}u_{ij}x^i\in\Q[x]$ for $j\ge1$, and $S_j=0$ for $j\le0$. For every $j\ge1$,
+\[
+S_j=n_j+(270x+972x^2+729x^3)\,S_{j-1}+(972x+729x^2)\,S_{j-2}+729x\,S_{j-3},
+\]
+where $n_1=90x+324x^2+243x^3$, $n_2=648x+486x^2$, $n_3=729x$ and $n_j=0$ for $j\ge4$.
+\end{lemma}
+
+\begin{proof}
+By Lemma~\ref{lem:u}(b), $F=\sum_{j\ge1}S_j(x)\,y^j$. Since $1-Q=(270x+972x^2+729x^3)\,y+(972x+729x^2)\,y^2+729x\,y^3$ and $N=\sum_{j=1}^3n_j\,y^j$, the identity $F=N+(1-Q)F$ read on the coefficient of $y^j$ is the claim. This is \decl{CalegariSlopes.Bridge.Level9.isColRec_col} in the formalization.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\textup{\ref{thm:qside}(b)}]
+On $\Q[[q]]$, $U(Vh\cdot f)=h\,U(f)$ and $U(1)=1$. By Theorem~\ref{thm:level9}(a), $W$ and $W^2$ have only exponents congruent to $1$ and $2$ modulo~$3$, so $U(W\,Vh)=U(W^2\,Vh)=0$, and
+\begin{equation}\label{eq:Usplit}
+U\bigl(Vh_0+W\,Vh_1+W^2\,Vh_2\bigr)=h_0\qquad(h_0,h_1,h_2\in\Q[[q]]).
+\end{equation}
+By Theorem~\ref{thm:level9}(b), (c), Lemma~\ref{lem:ring} applies to $w=W$, $x=g$, $x'=Vg$, and $V$ is a ring homomorphism. Put $T_0=0$ and $T_j=U(g^j)$ for $j\ge1$. The first identity of Lemma~\ref{lem:ring} and \eqref{eq:Usplit} give $T_1=90g+324g^2+243g^3$. The second gives $T_2=648g+486g^2+(270g+972g^2+729g^3)\,T_1$. The third, multiplied by $g^{j-3}$, gives for $j\ge3$
+\[
+T_j=729g\,U(g^{j-3})+(270g+972g^2+729g^3)\,T_{j-1}+(972g+729g^2)\,T_{j-2},
+\]
+where $729g\,U(g^{j-3})$ is $729g\,T_{j-3}$ for $j\ge4$ and $729g=n_3+729g\,T_0$ for $j=3$. So the sequence $(T_j)$ satisfies the recurrence of Lemma~\ref{lem:col} at $x=g$, and so does $(S_j(g))$, since evaluation at $g$ is a ring homomorphism $\Q[x]\to\Q[[q]]$. The recurrence determines $T_j$ from $T_1,\ldots,T_{j-1}$, so $T_j=S_j(g)$ for every $j\ge1$ by induction. This is \decl{CalegariSlopes.Bridge.c4_Sol} in the formalization.
+\end{proof}
+
+\subsection{The bridge to sequences}
+\begin{proof}[Proof of Proposition~\textup{\ref{prop:bridge}}]
+(i) Let $a$ be a sequence and $n\ge1$. Since $g^j=O(q^j)$, the coefficient of $q^n$ in $U\Phi(a)$ is
+\[
+\sum_{j\le3n}a_j\,[q^{3n}]g^j=\sum_{j\le3n}a_j\,[q^n]U(g^j)=\sum_{j\le3n}a_j\sum_{i\le n}u_{ij}\,[q^n]g^i=\sum_{i\le n}[q^n]g^i\sum_{j\le3n}u_{ij}a_j
+\]
+by Theorem~\ref{thm:qside}(b), and for $i\le n$ the inner sum is $(ua)_i$, since $u_{ij}=0$ for $j>3i$. Both constant terms are~$0$. So $U\Phi(a)=\Phi(ua)$. If $a\ne0$ and $j_0$ is the least index with $a_{j_0}\ne0$, the coefficient of $q^{j_0}$ in $\Phi(a)$ is $27^{j_0}a_{j_0}\ne0$.
+
+(ii) and (iii). Let $\tau(X)=X(1+X)^{-1}(1+9X)^{-3}\in X+X^2\Z[[X]]$. By Theorem~\ref{thm:qside}(a), $27\jinv=\tau(g)$, so $j^{-m}=27^{-m}\sum_{k\ge m}\rho_{mk}\,g^k$ with $\rho_{mk}=[X^k]\,\tau(X)^m\in\Z$.
+
+Let $F=\sum_m\beta_mj^{-m}\in\Sd$, with $v(\beta_m)-tm\to+\infty$; replacing $t$ by $\min(t,1)$ we may assume $0<t\le1$. Comparing coefficients of each power of $q$ (finitely many $m$ and $k$ contribute), $F=\Phi(a)$ with $a_k=\sum_{m\le k}27^{-m}\rho_{mk}\beta_m$. Put $s=3-t<3$. Then
+\[
+v(a_k)+sk\ \ge\ \min_{m\le k}\bigl((v(\beta_m)-tm)+(3-t)(k-m)\bigr),
+\]
+which tends to $+\infty$ with $k$, as $v(\beta_m)-tm\to+\infty$ and $3-t>0$. So $a\in\cL_s$; this is (ii).
+
+The series $\tau$ has a compositional inverse $\psi\in X+X^2\Z[[X]]$, so $g=\psi(27\jinv)$ and $g^k=\sum_{m\ge k}\gamma_{km}27^mj^{-m}$ with $\gamma_{km}\in\Z$. For $a\in\Lc$, $\Phi(a)=\sum_m\beta_mj^{-m}$ with $\beta_m=27^m\sum_{k\le m}\gamma_{km}a_k$, so $v(\beta_m)-m\ge 2m+\min_kv(a_k)\to+\infty$, and $\Phi(a)\in\Sd$ with $t=1$; this is (iii). This is \decl{CalegariSlopes.Spectral.BR1} in the formalization.
+\end{proof}
+
+\section{Loeffler's identity}\label{sec:adb}
+
+This section proves Theorem~\ref{thm:adb}. For $i,j\ge1$ put
+\[
+S_{ij}=i\,u_{ij},\qquad \kappa_p=p\,D_p,\qquad V_{ij}=\sum_{p=1}^{\min(i,j)}\kappa_p\,B_{pi}\,B_{pj}.
+\]
+Since $A_{ip}=(p/i)B_{pi}$, $i\sum_pA_{ip}D_pB_{pj}=V_{ij}$, so Theorem~\ref{thm:adb} says $S=V$. In terms of generating functions, with $b_p(y)=\sum_kB_{pk}y^k$, it says $x\,\partial F/\partial x=\sum_p\kappa_p\,b_p(x)\,b_p(y)$. We prove $S=V$ by exhibiting one linear operator that kills both sides, and then comparing boundary values: Lemma~\ref{lem:P1} makes the rows of $B$ eigenvectors of a pencil of operators, Lemmas~\ref{lem:RV} and~\ref{lem:RS} show that one operator $R$ built from the pencil kills $V$ and $S$, Lemma~\ref{lem:corners} gives the boundary values, and the descent at the end of the section combines them.
+
+\subsection{The pencil}
+For a function $f$ on the positive integers let
+\[
+(L_0f)(k)=\sum_{a=0}^2m_a(k)f(k+a),\qquad (L_1f)(k)=\sum_{a=0}^2n_a(k)f(k+a),
+\]
+with
+\begin{align*}
+m_0(k)&=9k^2(k+1)^2(k+2)^2, & n_0(k)&=-81(k+1)^2(k+2)^2,\\
+m_1(k)&=18k(k+1)^3(k+2)^2, & n_1(k)&=-18k(k+2)^2(5k+7),\\
+m_2(k)&=k(k+1)(k+2)^2(3k+4)(3k+5), & n_2(k)&=-k(k+1)(3k+4)(3k+5).
+\end{align*}
+For each $p$, the operator $L_0+p^2L_1$ has the coefficients $9(k+1)^2(k+2)^2(k-3p)(k+3p)$, $18k(k+2)^2\bigl((k+1)^3-p^2(5k+7)\bigr)$ and $k(k+1)(3k+4)(3k+5)(k+2-p)(k+2+p)$: it is the recurrence $\mathcal O_j$ that Loeffler found by creative telescoping for the $p$-th term of the sum $\sum_pA_{ip}D_pB_{pj}$ \cite[\S4]{Loe08}. Its coefficients are affine in $p^2$.
+
+\begin{lemma}\label{lem:P1}\lean{CalegariSlopes.ADB.P1}
+For all integers $p,k\ge1$, $(L_0B_{p\cdot})(k)+p^2(L_1B_{p\cdot})(k)=0$, where $B_{p\cdot}$ is the function $k\mapsto B_{pk}$.
+\end{lemma}
+
+\begin{proof}
+Appendix~\ref{app:cert} writes each term of the sum defining $B_{pk}$ as a hypergeometric term in $(k,t)$ and gives a function $\phi$ such that $L_0+p^2L_1$ applied to the term with index $t$ is $\phi(k,t+1)-\phi(k,t)$, for every integer~$t$; summing over $t$ gives the lemma. This is \decl{CalegariSlopes.ADB.P1} in the formalization.
+\end{proof}
+
+For a function $E$ on pairs of positive integers let
+\[
+(RE)(i,j)=\sum_{a,b=0}^2\bigl(m_a(i)\,n_b(j)-n_a(i)\,m_b(j)\bigr)\,E(i+a,j+b),
+\]
+that is, $R=L_0\otimes L_1-L_1\otimes L_0$. The next lemma is the pencil form of the fact that $L_x-L_y$ annihilates any weighted sum of products of eigenfunctions of an operator~$L$, which underlies Gr\"unbaum's commuting operators for Christoffel-Darboux kernels \cite{Gru83}; comparing two sides of an identity through one annihilating operator and then fixing the free coefficients by boundary values is Bateman's method for the product and bilinear expansions of Jacobi polynomials \cite[\S2]{Koo74}.
+
+\begin{lemma}\label{lem:RV}\lean{CalegariSlopes.ADB.RV_zero}
+$(RV)(i,j)=0$ for all $i,j\ge1$.
+\end{lemma}
+
+\begin{proof}
+By Lemma~\ref{lem:AB}, $B_{pk}=0$ for $p>k$, so $V(i+a,j+b)=\sum_{p=1}^{i+2}\kappa_pB_{p,i+a}B_{p,j+b}$ for $a,b\in\{0,1,2\}$. Hence
+\[
+(RV)(i,j)=\sum_{p=1}^{i+2}\kappa_p\Bigl((L_0B_{p\cdot})(i)\,(L_1B_{p\cdot})(j)-(L_1B_{p\cdot})(i)\,(L_0B_{p\cdot})(j)\Bigr).
+\]
+By Lemma~\ref{lem:P1}, $(L_0B_{p\cdot})(k)=-p^2(L_1B_{p\cdot})(k)$ at $k=i$ and $k=j$, so each bracket is $-p^2(L_1B_{p\cdot})(i)(L_1B_{p\cdot})(j)+p^2(L_1B_{p\cdot})(i)(L_1B_{p\cdot})(j)=0$. This is \decl{CalegariSlopes.ADB.RV_zero} in the formalization.
+\end{proof}
+
+The weights $\kappa_p$ play no role in Lemma~\ref{lem:RV}; they enter only through the boundary values below.
+
+\subsection{The rational function}
+The descent at the end of this section, which proves Theorem~\ref{thm:adb}, uses the following lemma with Lemma~\ref{lem:RV}.
+
+\begin{lemma}\label{lem:RS}\lean{CalegariSlopes.ADB.RS_zero, CalegariSlopes.ADB.Proof.Hhat_G_eq_zero}
+$(RS)(i,j)=0$ for all $i,j\ge1$.
+\end{lemma}
+
+\begin{proof}
+Extend $S$ by $S_{ij}=0$ when $i\le0$ or $j\le0$, and define $(RS)(i,j)$ by the same formula for all integers $i,j\ge-2$. Let $\theta_x=x\,\partial/\partial x$ and $\theta_y=y\,\partial/\partial y$ on $\Q[[x,y]]$, and $r_{ab}(i,j)=m_a(i)n_b(j)-n_a(i)m_b(j)$. The series $G=\theta_xF=\sum_{i,j}S_{ij}x^iy^j$ satisfies
+\[
+\widehat H:=\sum_{a,b=0}^2x^{2-a}y^{2-b}\,r_{ab}(\theta_x-a,\theta_y-b)\,G=\sum_{i,j\ge-2}(RS)(i,j)\,x^{i+2}y^{j+2},
+\]
+because $r(\theta_x-a,\theta_y-b)$ multiplies $x^Iy^J$ by $r(I-a,J-b)$, and the coefficient of $x^{i+2}y^{j+2}$ on the left is $\sum_{a,b}r_{ab}(i,j)S_{i+a,j+b}$.
+
+Say that a series $f\in\Q[[x,y]]$ has type $(e,d)$ if $fQ^e$ is a polynomial of degree at most $d$ in $x$ and at most $d$ in~$y$. Since $Q$ has degree $3$ in each variable, $F$ has type $(1,3)$; $\theta_x$ and $\theta_y$ map type $(e,d)$ to type $(e+1,d+3)$, as $\theta(P/Q^e)=(Q\,\theta P-eP\,\theta Q)/Q^{e+1}$; and a type $(e,d)$ is also a type $(e+1,d+3)$. The polynomials $m_a$ have degree~$6$ and $n_a$ degree~$4$, so each $r_{ab}(\theta_x-a,\theta_y-b)$ is a combination of $\theta_x^\alpha\theta_y^\beta$ with $\alpha+\beta\le10$. Since $G$ has type $(2,6)$, $\widehat H$ has type $(12,38)$.
+
+Now $\widehat HQ^{12}$ is a polynomial of degree at most $38$ in each variable, and $Q^{12}$ has constant term~$1$. So if the coefficients of $x^Iy^J$ in $\widehat H$ vanish for $0\le I,J\le38$, those of $\widehat HQ^{12}$ vanish in the same range, hence $\widehat HQ^{12}=0$ and $\widehat H=0$. These coefficients are the numbers $(RS)(i,j)$ for $-2\le i,j\le36$, integer combinations of the $u_{ij}$ with $0\le i,j\le38$. The proof computes the table of these $1521$ integers $u_{ij}$, the largest of which has $321$ bits, checks that it satisfies the recurrence $u=N+(1-Q)u$ read on coefficients (so that it is the table of the $u_{ij}$), and checks that the $1521$ combinations vanish. The Lean kernel carries out both checks, in integer arithmetic. So $\widehat H=0$, and $(RS)(i,j)=0$ for all $i,j\ge-2$. This is \decl{CalegariSlopes.ADB.RS_zero} in the formalization.
+\end{proof}
+
+\subsection{Boundary values}
+The descent also uses the following values of $S$ and $V$ near the boundary.
+
+\begin{lemma}\label{lem:corners}\lean{CalegariSlopes.ADB.V_corner, CalegariSlopes.ADB.u_eq_zero_of_gt, CalegariSlopes.ADB.V_eq_zero_of_gt, CalegariSlopes.ADB.u_corner, CalegariSlopes.ADB.D_mul_B_corner, CalegariSlopes.ADB.S_col_one, CalegariSlopes.ADB.S_col_two}
+For all $i,j\ge1$:
+\begin{enumerate}
+\item[(a)] $S_{ij}=V_{ij}=0$ if $i>3j$;
+\item[(b)] $S_{3j,j}=V_{3j,j}=j\,3^{6j}$;
+\item[(c)] $S_{i1}=V_{i1}$ and $S_{i2}=V_{i2}$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(a) For $S$ this is Lemma~\ref{lem:u}(b). A nonzero term of $V_{ij}$ has $p\le j$ and $B_{pi}\ne0$, so $i\le3p\le3j$ (Lemma~\ref{lem:AB}).
+
+(b) $S_{3j,j}=3j\,u_{3j,j}=j\,3^{6j}$ by Lemma~\ref{lem:u}(c). In $V_{3j,j}$ a nonzero term has $p\le j$ and $3j\le3p$, so $p=j$ and $V_{3j,j}=jD_jB_{j,3j}$, as $B_{jj}=1$. In the sum defining $B_{j,3j}$ only $t=j$ contributes, since $\mu(j,3j,t)\ne0$ needs $t\ge j$ and $t\le j$; there $\mu(j,3j,j)=2(3j)!^2/(2j)!^2$ and $3^{2j}/r_j(j)=3^{3j}(3j)!\,(2j)!/\bigl((6j)!\,j!\bigr)$, so $B_{j,3j}=2\cdot3^{3j}(3j)!^3/\bigl((6j)!\,(2j)!\,j!\bigr)$ and $D_jB_{j,3j}=3^{6j}$.
+
+(c) By (a), both columns vanish for $i>3j$, and for $i\le3j$ the two sides are
+\begin{align*}
+(S_{i1})_{i\le3}=(V_{i1})_{i\le3}&=(90,\ 648,\ 729),\\
+(S_{i2})_{i\le6}=(V_{i2})_{i\le6}&=(648,\ 49572,\ 524880,\ 1784592,\ 2361960,\ 1062882).
+\end{align*}
+This is \decl{CalegariSlopes.ADB.V_corner} in the formalization.
+\end{proof}
+
+\subsection{The descent}
+\begin{proof}[Proof of Theorem~\ref{thm:adb}]
+Let $E=S-V$ on pairs of positive integers. By Lemmas~\ref{lem:RV} and~\ref{lem:RS}, $(RE)(i,j)=0$ for all $i,j\ge1$, and by Lemma~\ref{lem:corners}, $E(i,j)=0$ for $i\ge3j$ and for $j\le2$. In $(RE)(i,j-2)$ the coefficient of $E(i,j)$ is
+\[
+m_0(i)\,n_2(j-2)-n_0(i)\,m_2(j-2)=9(i+1)^2(i+2)^2(j-2)(j-1)(3j-2)(3j-1)(9j^2-i^2),
+\]
+which is nonzero for $j\ge3$ and $1\le i<3j$; the other eight terms of $(RE)(i,j-2)$ are $E(i+1,j)$, $E(i+2,j)$ and entries of the columns $j-2$ and $j-1$. Let $j\ge3$ and assume that the columns $1,\ldots,j-1$ of $E$ vanish. For $i=3j-1,3j-2,\ldots,1$ in turn, $E(i+1,j)$ and $E(i+2,j)$ are already known to vanish, and $(RE)(i,j-2)=0$ gives $E(i,j)=0$. By induction on~$j$, $E=0$, that is $S=V$, which is Theorem~\ref{thm:adb}. This is \decl{CalegariSlopes.ADB.adb} in the formalization.
+\end{proof}
+
+\section{The eigenvectors}\label{sec:spectral}
+
+This section proves Theorem~\ref{thm:spectral}. Given Theorem~\ref{thm:adb} and Lemma~\ref{lem:AB}, parts (a) and (b) are Loeffler's diagonalization theorem for matrices $ADB$ with $A$ and $B$ congruent to the identity and $D$ diagonal with strictly increasing valuations \cite[\S6]{Loe07}, whose proof goes through the Newton polygon of $ADB$ \cite[Lemma~5]{BC05} and Serre's theory of completely continuous operators \cite{Ser62}. We give a proof without determinants, in the style of Dwork: each eigenvector, with its eigenvalue, is the fixed point of a contraction, as in Wan's construction of a Hodge-Newton decomposition in infinite rank, which splits off the unit-root part \cite[Lemma~3.4]{Wan99}. Kedlaya proves \cite[Lemma~5]{BC05} for semilinear operators of finite rank by successive approximation \cite[Proposition~5.9]{Ked04}. Lemma~\ref{lem:perturb} expands null sequences in a family close to the unit vectors, for part (b); Lemmas~\ref{lem:C} and~\ref{lem:UA} turn the eigenvalue problem for $u$ into one for $DC$, which Proposition~\ref{prop:DC} solves, for part (a). Part (c) uses only the matrix~$u$, through Lemma~\ref{lem:radius}.
+
+\subsection{Null sequences}
+A matrix $M=(M_{ij})_{i,j\ge1}$ over $\Cp$ is \emph{admissible} if $\|M\|=\sup_{i,j}|M_{ij}|$ is finite and every column tends to~$0$. For an admissible $M$ and $a\in\Lc$, each series $(Ma)_i=\sum_jM_{ij}a_j$ converges, since its terms tend to~$0$; $Ma\in\Lc$ and $\|Ma\|\le\|M\|\,\|a\|$; and $M a^{(k)}\to Ma$ in $\Lc$ when $a^{(k)}\to a$. The space $\Lc$ is complete for the norm $\|a\|=\max_j|a_j|$. The following perturbation lemma is \cite[Lemma~3.2]{Con00} in the form we need; it rests on the orthonormality criterion, which Serre proves for discrete valuations \cite[\S1, Lemme~1]{Ser62}.
+
+\begin{lemma}\label{lem:perturb}\lean{CalegariSlopes.Spectral.NearBasis.exists_expand_eq, CalegariSlopes.Spectral.NearBasis.eq_zero_of_expand_eq_zero, CalegariSlopes.Spectral.NearBasis.isC0_expand, CalegariSlopes.Spectral.NearBasis.bact_expand}
+Let $0\le c<1$ and $x_1,x_2,\ldots\in\Lc$ with $|x_{n,i}-\delta_{ni}|\le c$ for all $n,i\ge1$. For $b\in\Lc$ the series $\sum_nb_nx_n$ converges in $\Lc$, and $\|\sum_nb_nx_n\|=\|b\|$. Every $a\in\Lc$ is $\sum_nb_nx_n$ for exactly one $b\in\Lc$. If $M$ is admissible, then $M\sum_nb_nx_n=\sum_nb_n\,Mx_n$.
+\end{lemma}
+
+\begin{proof}
+Let $X$ be the matrix with columns $x_n$ and $P=X-I$; both are admissible and $\|P\|\le c$. For $b\in\Lc$ the partial sums $\sum_{n\le m}b_nx_n$ are $X$ applied to the truncations of $b$, which tend to $b$, so the series converges to $Xb$; and $\|Pb\|\le c\|b\|<\|b\|$ for $b\ne0$, so $\|Xb\|=\|b+Pb\|=\|b\|$. This gives the norm and the uniqueness. Given $a$, the iteration $b^{(0)}=a$, $b^{(k+1)}=a-Pb^{(k)}$ has $\|b^{(k+1)}-b^{(k)}\|\le c^k\|b^{(1)}-b^{(0)}\|$, so it converges to some $b\in\Lc$ with $b=a-Pb$, that is $Xb=a$. The last claim is the continuity of $M$ on $\Lc$ applied to the partial sums. This is \decl{CalegariSlopes.Spectral.NearBasis.exists_expand_eq} in the formalization.
+\end{proof}
+
+\subsection{The matrix \texorpdfstring{$C=BA$}{C = BA}}
+The proof of Proposition~\ref{prop:DC} uses the following bounds on the matrix $C$.
+
+\begin{lemma}\label{lem:C}\lean{CalegariSlopes.Spectral.norm_Cm_le, CalegariSlopes.Spectral.Cm_eq_zero_of_lt, CalegariSlopes.Spectral.Cm_eq_zero_of_gt, CalegariSlopes.Spectral.norm_Cm_self_sub_one_le}
+For $i,j\ge1$ let $C_{ij}=\sum_{k=1}^{3i}B_{ik}A_{kj}$. Then $C_{ij}=0$ unless $j/3\le i\le3j$, $v(C_{ij})\ge|i-j|$, and $v(C_{ii}-1)\ge2$.
+\end{lemma}
+
+\begin{proof}
+By Lemma~\ref{lem:AB}, $B_{ik}A_{kj}\ne0$ needs $i\le k\le3i$ and $j\le k\le3j$, so $j\le3i$ and $i\le3j$, and then $v(B_{ik}A_{kj})\ge(k-i)+(k-j)=|i-j|+2(k-\max(i,j))\ge|i-j|$. For $i=j$ the term $k=i$ is $B_{ii}A_{ii}=1$ and the others have valuation at least $2(k-i)\ge2$. This is \decl{CalegariSlopes.Spectral.norm_Cm_le} in the formalization.
+\end{proof}
+
+Hence $C$ is admissible, $|C_{ij}|\le1/3$ for $i\ne j$, and $|C_{ii}|=1$. For a sequence $a$ write $(Da)_p=D_pa_p$ and $(Ca)_p=\sum_{m\le3p}C_{pm}a_m$.
+
+\begin{lemma}\label{lem:UA}\lean{CalegariSlopes.Spectral.bact_u_bact_A, CalegariSlopes.Spectral.isC0_bact, CalegariSlopes.Spectral.norm_bact_A_sub_le}
+Let $w$ be a sequence and $(Aw)_k=\sum_{j\le k}A_{kj}w_j$. If $w\in\Lc$, then $Aw\in\Lc$ and $\|Aw-w\|\le\|w\|/3$. For every sequence $w$, $u(Aw)=A\bigl(D(Cw)\bigr)$.
+\end{lemma}
+
+\begin{proof}
+The matrix $A$ is lower unitriangular with $|A_{kj}|\le3^{-(k-j)}$ (Lemma~\ref{lem:AB}), so $A$ and $A-I$ are admissible and $\|A-I\|\le1/3$. For the identity, fix $i$; all sums below are finite. By Lemma~\ref{lem:u}(b) and Theorem~\ref{thm:adb},
+\[
+\bigl(u(Aw)\bigr)_i=\sum_{j\le3i}\ \sum_{p\le\min(i,j)}A_{ip}D_pB_{pj}(Aw)_j=\sum_{p\le i}A_{ip}D_p\sum_{j=p}^{3p}B_{pj}\sum_{m\le j}A_{jm}w_m,
+\]
+since $B_{pj}=0$ for $j>3p$, and the inner double sum is $\sum_{m\le3p}C_{pm}w_m=(Cw)_p$. This is \decl{CalegariSlopes.Spectral.bact_u_bact_A} in the formalization.
+\end{proof}
+
+\subsection{One eigenvector for each slope}
+The proof of Theorem~\ref{thm:spectral}(a), which follows, takes one eigenvector for each slope from the next proposition.
+
+\begin{proposition}\label{prop:DC}\lean{CalegariSlopes.Spectral.exists_eigen_DC}
+Let $n\ge1$. There are $y\in\Lc$ with $y_n=0$ and $\|y\|\le1/3$, and $\xi\in\Cp$ with $|\xi-1|\le1/9$, such that $w=e_n+y$ satisfies $D_i(Cw)_i=D_n\xi\,w_i$ for every $i\ge1$. Here $e_n$ is the $n$-th unit vector.
+\end{proposition}
+
+\begin{proof}
+Let $Y=\{y\in\Lc:y_n=0,\ \|y\|\le1/3\}$, a closed subset of $\Lc$, hence complete. For $y\in Y$ put $w=e_n+y$, so $w_n=1$ and $\|w\|=1$, and
+\begin{gather*}
+\xi(y)=(Cw)_n,\qquad \eta_i(y)=\sum_{j\ne i}C_{ij}w_j,\qquad \Delta_i(y)=D_n\xi(y)-D_iC_{ii},\\
+T(y)_i=\frac{D_i\,\eta_i(y)}{\Delta_i(y)}\quad(i\ne n),\qquad T(y)_n=0.
+\end{gather*}
+By Lemma~\ref{lem:C}, $v(\xi(y)-1)\ge\min\bigl(v(C_{nn}-1),\min_{j\ne n}(v(C_{nj})+v(y_j))\bigr)\ge2$, so $v(D_n\xi(y))=\sig_n$ by Lemma~\ref{lem:D}, while $v(D_iC_{ii})=\sig_i$. For $i\ne n$, $\sig_i\ne\sig_n$ (Lemma~\ref{lem:gap}), so $\Delta_i(y)\ne0$ and $v(\Delta_i(y))=\min(\sig_i,\sig_n)\le\sig_i$; hence $v(D_i/\Delta_i(y))\ge0$. Also $v(\eta_i(y))\ge1$, since $v(C_{ij})\ge1$ for $j\ne i$ and $\|w\|=1$. So $|T(y)_i|\le1/3$, and $T(y)\in\Lc$ because $|T(y)_i|\le|\eta_i(y)|$ and $\eta(y)$ is the off-diagonal part of $C$ applied to~$w$. Thus $T$ maps $Y$ to~$Y$.
+
+Let $y,y'\in Y$ and $d=-\log_3\|y-y'\|$. Then $v(\xi(y)-\xi(y'))\ge1+d$ and $v(\eta_i(y)-\eta_i(y'))\ge1+d$, as only off-diagonal entries of $C$ multiply $y-y'$. Moreover
+\[
+\frac{D_i}{\Delta_i(y)}-\frac{D_i}{\Delta_i(y')}=\frac{D_iD_n\bigl(\xi(y')-\xi(y)\bigr)}{\Delta_i(y)\,\Delta_i(y')}
+\]
+has valuation $\sig_i+\sig_n-2\min(\sig_i,\sig_n)+v(\xi(y)-\xi(y'))\ge1+d$. Writing $T(y)_i-T(y')_i=\frac{D_i}{\Delta_i(y)}\bigl(\eta_i(y)-\eta_i(y')\bigr)+\Bigl(\frac{D_i}{\Delta_i(y)}-\frac{D_i}{\Delta_i(y')}\Bigr)\eta_i(y')$, we get $v(T(y)_i-T(y')_i)\ge1+d$, that is $\|T(y)-T(y')\|\le\|y-y'\|/3$. By the Banach fixed point theorem $T$ has a fixed point $y\in Y$. Put $\xi=\xi(y)$. At $i=n$, $D_n(Cw)_n=D_n\xi=D_n\xi\,w_n$. At $i\ne n$, $y_i=T(y)_i$ gives $(D_n\xi-D_iC_{ii})\,y_i=D_i\,\eta_i(y)$, so $D_i(Cw)_i=D_iC_{ii}y_i+D_i\eta_i(y)=D_n\xi\,y_i=D_n\xi\,w_i$. This is \decl{CalegariSlopes.Spectral.exists_eigen_DC} in the formalization.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\textup{\ref{thm:spectral}(a)}]
+For $n\ge1$ take $w_n=e_n+y$ and $\xi_n=\xi$ from Proposition~\ref{prop:DC}, and put $x_n=Aw_n$ and $\lambda_n=D_n\xi_n$. Then $x_n\in\Lc$ and $x_n-e_n=(A-I)w_n+(w_n-e_n)$ has norm at most $1/3$ by Lemma~\ref{lem:UA}; $D(Cw_n)=\lambda_nw_n$, so $ux_n=A(\lambda_nw_n)=\lambda_nx_n$ by Lemma~\ref{lem:UA}; and $|\lambda_n|=|D_n|=3^{-\sig_n}$ by Lemma~\ref{lem:D}, as $|\xi_n|=1$. This is \decl{CalegariSlopes.Spectral.exists_eigenFamily} in the formalization.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\textup{\ref{thm:spectral}(b)}]
+By Lemma~\ref{lem:perturb} with $c=1/3$, $a=\sum_nb_nx_n$ for a unique $b\in\Lc$. The matrix $u$ is admissible, since $|u_{ij}|\le1$ and each column is finite (Lemma~\ref{lem:u}), so $(u-\mu)^\ell a=\sum_n(\lambda_n-\mu)^\ell b_nx_n$, where $((\lambda_n-\mu)^\ell b_n)_n\in\Lc$. By the uniqueness in Lemma~\ref{lem:perturb}, $(u-\mu)^\ell a=0$ gives $(\lambda_n-\mu)^\ell b_n=0$ for every~$n$, so $b_n=0$ whenever $\lambda_n\ne\mu$. This is \decl{CalegariSlopes.Spectral.EigenFamily.diag} in the formalization.
+\end{proof}
+
+\subsection{From any radius below three to the null sequences}
+Let $\psi(s)=\max(3s-6,\ s/3-2)$ for real~$s$.
+
+\begin{lemma}\label{lem:radius}\lean{CalegariSlopes.Spectral.exists_iterate_phiS_nonpos, CalegariSlopes.Spectral.InS_Uop, CalegariSlopes.Spectral.phiS_lt, CalegariSlopes.Spectral.phiS_gt}
+\begin{enumerate}
+\item[(a)] For every real $s$, every sequence $a$ and every $i\ge1$, $v\bigl((ua)_i\bigr)+\psi(s)\,i\ge\min_{i/3\le j\le3i}\bigl(v(a_j)+sj\bigr)-1$. Hence $u$ maps $\cL_s$ into $\cL_{\psi(s)}$.
+\item[(b)] For $-3<s<3$, $-3<\psi(s)<s$, and $\psi^m(s)\le0$ for some $m\ge0$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(a) For $i/3\le j\le3i$, Lemma~\ref{lem:u}(d) gives $v(u_{ij}a_j)+\psi(s)i\ge(v(a_j)+sj)+\ell(j)-1$ with $\ell(j)=(3/2-s)j+(3/2+\psi(s))i$, affine in~$j$. At the ends, $\ell(i/3)=(2-s/3+\psi(s))i\ge0$ and $\ell(3i)=(6-3s+\psi(s))i\ge0$ by the definition of $\psi$, so $\ell\ge0$ between them, and the ultrametric inequality over the finite sum $(ua)_i$ gives the bound. If $a\in\cL_s$, the right side tends to $+\infty$ with~$i$.
+
+(b) $3s-6<s$ for $s<3$ and $s/3-2<s$ for $s>-3$, so $\psi(s)<s$; and $\psi(s)\ge s/3-2>-3$. For $s\le3/2$, $\psi(s)=s/3-2\le-3/2$. For $3/2\le s<3$, $\psi(s)=3s-6$ and $3-\psi(s)=3(3-s)$, so the distance to $3$ triples at each step until the iterate is at most $3/2$, and one more step gives a value at most $-3/2$. This is \decl{CalegariSlopes.Spectral.exists_iterate_phiS_nonpos} in the formalization.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\textup{\ref{thm:spectral}(c)}]
+If $s\le0$ then $a\in\cL_s\subseteq\Lc$. Let $0<s<3$. For $-3<t<3$ the space $\cL_t$ is stable under $u$, since $\psi(t)<t$. Expanding $(u-\mu)^\ell a=0$ binomially and using $\mu\ne0$ gives $a=uh$ with $h=-(-\mu)^{-\ell}\sum_{m=1}^{\ell}\binom{\ell}{m}(-\mu)^{\ell-m}u^{m-1}a$. If $a\in\cL_t$ with $-3<t<3$, then $h\in\cL_t$, so $a=uh\in\cL_{\psi(t)}$ by Lemma~\ref{lem:radius}(a). Starting from $t=s$ and applying this $m$ times, with $m$ as in Lemma~\ref{lem:radius}(b), gives $a\in\cL_{\psi^m(s)}\subseteq\Lc$. This is \decl{CalegariSlopes.Spectral.isC0_of_InS} in the formalization.
+\end{proof}
+
+\section{The characteristic series}\label{sec:fredholm}
+
+The factorization also gives the valuations of the sums of principal minors of~$u$. For a finite set $S$ of positive integers let $u_S=(u_{ij})_{i,j\in S}$, and let $\Sigma_n=\sig_1+\cdots+\sig_n$.
+
+\begin{corollary}\label{cor:fredholm}\lean{CalegariSlopes.Newton.calegari_conjecture, CalegariSlopes.Newton.newton}
+For every $n\ge0$ the family $(\det u_S)$, where $S$ runs over the sets of $n$ positive integers, is summable in $\Qp$, its sum $c_n$ is nonzero, and $v(c_n)=\Sigma_n$.
+\end{corollary}
+
+So the Newton polygon of $\sum_n(-1)^nc_nX^n$ has slopes $\sig_1,\sig_2,\ldots$, each once; for instance $\Sigma_1,\ldots,\Sigma_8=2,8,16,26,42,60,80,104$. The proof rests on a bound for each minor (Lemma~\ref{lem:minor}), which uses three facts about a set $T$ of $n$ positive integers, which follow from $t_k\ge k$ for the $k$-th smallest element $t_k$ of $T$ and from Lemma~\ref{lem:gap}: $\sum_{t\in T}t\ge n(n+1)/2$, with strict inequality unless $T=\{1,\ldots,n\}$, and $\sum_{t\in T}\omega_t\ge\omega_1+\cdots+\omega_n$; note that $\Sigma_n=n(n+1)+\omega_1+\cdots+\omega_n$.
+
+\begin{lemma}\label{lem:minor}\lean{CalegariSlopes.Newton.norm_principalMinor_le_of_ne, CalegariSlopes.Newton.minor_factor, CalegariSlopes.Newton.norm_principalMinor_le, CalegariSlopes.Newton.principalMinor_Ipn}
+Let $S$ be a set of $n\ge1$ positive integers. Then $v(\det u_S)\ge2\sum_{s\in S}s+\omega_1+\cdots+\omega_n$; in particular $v(\det u_S)\ge\Sigma_n+2$ if $S\ne\{1,\ldots,n\}$. Moreover $\det u_{\{1,\ldots,n\}}=D_1\cdots D_n$.
+\end{lemma}
+
+\begin{proof}
+Let $m=\max S$. By Theorem~\ref{thm:adb} and Lemma~\ref{lem:AB}, row $s$ of $u_S$ is $\sum_{p=1}^{m}A_{sp}D_p\,(B_{ps'})_{s'\in S}$. Expanding the determinant by multilinearity in the rows, and dropping the maps with two equal rows,
+\[
+\det u_S=\sum_f\Bigl(\prod_{s\in S}A_{s,f(s)}D_{f(s)}\Bigr)\det\bigl(B_{f(s),s'}\bigr)_{s,s'\in S},
+\]
+over the injective maps $f:S\to\{1,\ldots,m\}$. Let $T=f(S)$. By Lemma~\ref{lem:AB}, $v\bigl(\prod_sA_{s,f(s)}\bigr)\ge\sum_{s\in S}s-\sum_{t\in T}t$ and every term of the Leibniz expansion of $\det(B_{f(s),s'})$ has valuation at least $\sum_{s\in S}s-\sum_{t\in T}t$; by Lemma~\ref{lem:D}, $v\bigl(\prod_sD_{f(s)}\bigr)=\sum_{t\in T}\sig_t=\sum_{t\in T}(2t+\omega_t)$. So each term has valuation at least $2\sum_{s\in S}s+\sum_{t\in T}\omega_t\ge2\sum_{s\in S}s+\omega_1+\cdots+\omega_n$. If $S\ne\{1,\ldots,n\}$, then $2\sum_{s\in S}s\ge n(n+1)+2$. Finally, $u_{\{1,\ldots,n\}}$ is the product of the leading $n\times n$ blocks of $A$, $\mathrm{diag}(D_k)$ and $B$, of determinants $1$, $D_1\cdots D_n$ and~$1$. This is \decl{CalegariSlopes.Newton.norm_principalMinor_le_of_ne} in the formalization.
+\end{proof}
+
+\begin{proof}[Proof of Corollary~\textup{\ref{cor:fredholm}}]
+For $n=0$ the only set is empty and $c_0=1$. Let $n\ge1$. By Lemma~\ref{lem:u}(a), $v(\det u_S)\ge2\sum_{s\in S}s$, and only finitely many $S$ have $\sum_{s\in S}s$ below a given bound, so $\det u_S\to0$ along the cofinite filter and the family is summable in the complete non-archimedean field~$\Qp$. All terms with $S\ne\{1,\ldots,n\}$ lie in the closed subgroup $3^{\Sigma_n+2}\Z_3$, hence so does their sum, while the term $S=\{1,\ldots,n\}$ has valuation $\Sigma_n$ (Lemmas~\ref{lem:minor} and~\ref{lem:D}). So $v(c_n)=\Sigma_n$. This is \decl{CalegariSlopes.Newton.calegari_conjecture} in the formalization.
+\end{proof}
+
+\section{Loeffler's conjecture at other radii}\label{sec:loeffler}
+
+Loeffler conjectured that the factorization holds on a whole interval of radii \cite[Conjecture~3.1]{Loe07}: for $p=3$ and all $r$ in some open interval containing $1/2$, the matrix of $U$ on the forms of radius $r$, in his orthonormal basis, is $A^{(r)}DB^{(r)}$ with $A^{(r)}$ lower and $B^{(r)}$ upper unitriangular, integral and congruent to the identity modulo~$3$, and $D$ the matrix of Section~\ref{sec:assembly}. This section proves the corresponding statements for the matrices $u^{(r)}$ defined below, with the exact intervals of~$r$, and the spectral expansion that he states at $p=2$ as a consequence of such a factorization \cite[\S6]{Loe07}.
+
+The results are statements about matrices. For a rational $r$ with $0\le r<3/4$, Loeffler identifies the forms of radius~$r$ with functions on the disc $|f_3|\le3^{6r}$ of $X_0(3)$, where $f_3=g/27$, and takes as orthonormal basis $\bigl((c_rf_3)^j\bigr)_{j\ge1}$, where $c_r\in\Cp$ has $v(c_r)=6r$, so that $c_rf_3$ has supremum~$1$ on the disc \cite[\S2 and Appendix~A]{Loe07}; the identification goes through Smithline's description of the overconvergent region by the valuation of $E_6$ \cite[Proposition~3.5]{Smi07}. With $\gamma=c_r/27$, Theorem~\ref{thm:qside}(b) gives $U\bigl((c_rf_3)^j\bigr)=\sum_i\gamma^{j-i}u_{ij}\,(c_rf_3)^i$, so the matrix of $U$ in this basis is $\bigl(\gamma^{j-i}u_{ij}\bigr)$.
+
+For any rational $r$ put $s=3-6r$, choose $\gamma\in\Cp$ with $v(\gamma)=-s$, and put
+\[
+u^{(r)}_{ij}=\gamma^{j-i}u_{ij},\qquad A^{(r)}_{ij}=\gamma^{j-i}A_{ij},\qquad B^{(r)}_{ij}=\gamma^{j-i}B_{ij}\qquad(i,j\ge1);
+\]
+for $0\le r<3/4$ and $\gamma=c_r/27$, $u^{(r)}$ is the matrix above. The valuations
+\[
+v\bigl(B^{(r)}_{ij}\bigr)=v(B_{ij})-s(j-i),\qquad v\bigl(A^{(r)}_{ij}\bigr)=v(A_{ij})+s(i-j)
+\]
+do not depend on the choice of~$\gamma$. The next lemma gives the factorization of $u^{(r)}$, the entries of $A$ and $B$ next to the diagonal, and two entries that attain the bounds of Lemma~\ref{lem:AB}.
+
+\begin{lemma}\label{lem:super}\lean{CalegariSlopes.Conj5.factorization, CalegariSlopes.Conj5.factors_unitTriangular, CalegariSlopes.Conj5.factorization_unique, CalegariSlopes.Conj5.ldu_unique, CalegariSlopes.Conj5.B_succ, CalegariSlopes.Conj5.A_succ, CalegariSlopes.Conj5.padicValRat_B_succ, CalegariSlopes.Conj5.padicValRat_A_succ, CalegariSlopes.Conj5.B_two_four, CalegariSlopes.Conj5.A_four_two, CalegariSlopes.Conj5.padicValRat_B_two_four, CalegariSlopes.Conj5.padicValRat_A_four_two}
+\begin{enumerate}
+\item[(a)] Let $K$ be a field of characteristic~$0$ and $\gamma\in K$, $\gamma\ne0$. For all $i,j\ge1$,
+\[
+\sum_{p=1}^{\min(i,j)}\gamma^{p-i}A_{ip}\,D_p\,\gamma^{j-p}B_{pj}=\gamma^{j-i}u_{ij}.
+\]
+If $A'_{ij},B'_{ij},D'_i\in K$ $(i,j\ge1)$ satisfy $A'_{ij}=0$ for $i<j$, $B'_{ij}=0$ for $i>j$, $A'_{ii}=B'_{ii}=1$ and $\sum_{p=1}^{\min(i,j)}A'_{ip}D'_pB'_{pj}=\gamma^{j-i}u_{ij}$ for all $i,j\ge1$, then $A'_{ij}=\gamma^{j-i}A_{ij}$, $B'_{ij}=\gamma^{j-i}B_{ij}$ and $D'_i=D_i$ for all $i,j\ge1$.
+\item[(b)] For $i\ge1$, $B_{i,i+1}=36\,i(i+1)^2/\bigl((3i+1)(3i+2)\bigr)$ and $A_{i+1,i}=36\,i^2(i+1)/\bigl((3i+1)(3i+2)\bigr)$; so $v(B_{i,i+1})=2+v(i)+2v(i+1)$ and $v(A_{i+1,i})=2+2v(i)+v(i+1)$.
+\item[(c)] $B_{24}=3060/77$ and $A_{42}=1530/77$, both of valuation~$2$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(a) Since $\gamma^{p-i}\gamma^{j-p}=\gamma^{j-i}$, the identity is Theorem~\ref{thm:adb} multiplied by $\gamma^{j-i}$, the terms with $p>\min(i,j)$ being zero by Lemma~\ref{lem:AB}. For the uniqueness write $\hat A_{ij}=\gamma^{j-i}A_{ij}$ and $\hat B_{ij}=\gamma^{j-i}B_{ij}$: by Lemma~\ref{lem:AB}, $\hat A$ is lower and $\hat B$ upper unitriangular, and $D_n\ne0$ for every $n$ by Lemma~\ref{lem:D}. Let $n\ge1$, and assume that $D'_p=D_p$, that $B'_{pj}=\hat B_{pj}$ for $j\ge p$ and that $A'_{ip}=\hat A_{ip}$ for $i\ge p$, for every $p<n$. For $j\ge n$ the entry $(n,j)$ of the two factorizations gives
+\[
+\sum_{p<n}A'_{np}D'_pB'_{pj}+D'_nB'_{nj}=\sum_{p<n}\hat A_{np}D_p\hat B_{pj}+D_n\hat B_{nj},
+\]
+where the two sums over $p<n$ agree. At $j=n$ this is $D'_n=D_n$, and then $B'_{nj}=\hat B_{nj}$ for $j\ge n$. The entries $(i,n)$ with $i\ge n$ give $A'_{in}=\hat A_{in}$ in the same way, and the entries on the other side of the diagonal are zero in both factorizations.
+
+(b) In the sum defining $B_{i,i+1}$ a nonzero term needs $2t-1\ge0$ and $1-t\ge0$, so $t=1$; there $\mu(i,i+1,1)=4i(i+1)^2$ and $r_1(i)=(3i+1)(3i+2)$, which is prime to~$3$, so $B_{i,i+1}=9\cdot4i(i+1)^2/\bigl((3i+1)(3i+2)\bigr)$, and $A_{i+1,i}=\frac{i}{i+1}B_{i,i+1}$. The valuations follow, as $36=3^2\cdot4$.
+
+(c) For $(i,k)=(2,4)$ the terms $t=1,2$ give $B_{24}=9\cdot64/56+81\cdot2240/6160=72/7+324/11=3060/77$, and $3060=3^2\cdot340$; $A_{42}=\frac12B_{24}$.
+
+The identity of part~(a) is \decl{CalegariSlopes.Conj5.factorization} in the formalization.
+\end{proof}
+
+The next theorem gives the rational $r$ for which the factors $A^{(r)}$ and $B^{(r)}$ are integral, congruent to the identity modulo the maximal ideal, or congruent to the identity modulo~$3$; the proof of Corollary~\ref{cor:expansion} uses its part~(b).
+
+\begin{theorem}\label{thm:loeffler}\lean{CalegariSlopes.Conj5.integral_iff, CalegariSlopes.Conj5.valuation_B_ge, CalegariSlopes.Conj5.valuation_A_ge, CalegariSlopes.Conj5.valuation_uniform, CalegariSlopes.Conj5.congr_maximal_iff, CalegariSlopes.Conj5.congr_three_iff, CalegariSlopes.Conj5.padicValRat_B_ge, CalegariSlopes.Conj5.padicValRat_A_ge}
+Let $r$ be rational and $s=3-6r$.
+\begin{enumerate}
+\item[(a)] All the entries of $A^{(r)}$ and $B^{(r)}$ are integral if and only if $1/3\le r\le2/3$.
+\item[(b)] For $i<j$, $v(B^{(r)}_{ij})\ge(1-s)(j-i)$, and for $i>j$, $v(A^{(r)}_{ij})\ge(1+s)(i-j)$. If $1/3\le r\le2/3$, every entry of $A^{(r)}$ and $B^{(r)}$ off the diagonal has valuation at least $1-|s|$. All these entries have positive valuation if and only if $1/3<r<2/3$.
+\item[(c)] All the entries of $A^{(r)}$ and $B^{(r)}$ off the diagonal have valuation at least~$1$ if and only if $5/12\le r\le7/12$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+In terms of $s$ the three conditions on $r$ are $|s|\le1$, $|s|<1$ and $|s|\le1/2$. By Lemma~\ref{lem:super}(c), $v(B^{(r)}_{24})=2-2s$ and $v(A^{(r)}_{42})=2+2s$; they are negative for $|s|>1$, one of them is $0$ at $|s|=1$, and one of them is below $1$ for $|s|>1/2$. This proves each ``only if''. Conversely, the entries of $A^{(r)}$ and $B^{(r)}$ are $1$ on the diagonal and $0$ on one side of it (Lemma~\ref{lem:AB}), and on the other side Lemma~\ref{lem:AB} gives $v(B_{ij})\ge j-i$ and $v(A_{ij})\ge i-j$, hence the two bounds of~(b), for every~$r$. For $|s|\le1$ they are at least $1-|s|\ge0$, which is positive for $|s|<1$. Let $|s|\le1/2$. At distance $1$, Lemma~\ref{lem:super}(b) gives $v(B^{(r)}_{i,i+1})\ge2-s\ge3/2$ and $v(A^{(r)}_{i+1,i})\ge2+s\ge3/2$; at distance $d\ge2$ the bounds of~(b) are at least $(1-|s|)d\ge d/2\ge1$. This is \decl{CalegariSlopes.Conj5.integral_iff} in the formalization.
+\end{proof}
+
+The spectral expansion follows as in Section~\ref{sec:spectral}, with the factor $1/3$ of the contraction replaced by $3^{-(1-|s|)}$.
+
+\begin{corollary}\label{cor:expansion}\lean{CalegariSlopes.Conj5.spectral_expansion, CalegariSlopes.Conj5.x_mem_L, CalegariSlopes.Conj5.exists_gamma, CalegariSlopes.Conj5.Ur_kact_Ag, CalegariSlopes.Conj5.chyp_Cg, CalegariSlopes.Conj5.CHyp.exists_eigen, CalegariSlopes.Conj5.exists_eigvec_r, CalegariSlopes.Conj5.diag_of_termwise, CalegariSlopes.Conj5.NearBasis.existsUnique_expand, CalegariSlopes.Conj5.NearBasis.iSup_norm_expand, CalegariSlopes.Conj5.identify}
+Let $r$ be rational with $1/3<r<2/3$, $s=3-6r$, $\varepsilon=1-|s|$, and $\gamma\in\Cp$ with $v(\gamma)=-s$. There are $y_1,y_2,\ldots\in\Lc$ with $|y_{n,i}-\delta_{ni}|\le3^{-\varepsilon}$ and $u^{(r)}y_n=\lambda_ny_n$, with $\lambda_n$ as in Theorem~\ref{thm:spectral}. Every $a\in\Lc$ is $\sum_nb_ny_n$ for exactly one $b\in\Lc$, and $\|a\|=\|b\|$; for $\mu\ne0$, the generalized eigenvectors of $u^{(r)}$ in $\Lc$ for $\mu$ are the multiples of $y_n$ if $\mu=\lambda_n$, and $0$ if $\mu$ is none of the~$\lambda_n$. Moreover $x_n\in\cL_s$ for every~$n$.
+\end{corollary}
+
+\begin{proof}
+Put $C^{(r)}_{ij}=\sum_kB^{(r)}_{ik}A^{(r)}_{kj}=\gamma^{j-i}C_{ij}$. A term with $k\ge\max(i,j)$ has valuation at least $(1-s)(k-i)+(1+s)(k-j)$ by Theorem~\ref{thm:loeffler}(b), so $v(C^{(r)}_{ij})\ge\varepsilon|i-j|$, and $v(C^{(r)}_{ii}-1)\ge2$ as in Lemma~\ref{lem:C}. Lemma~\ref{lem:UA} holds for $u^{(r)}$, $A^{(r)}$, $C^{(r)}$ with $\|A^{(r)}-I\|\le3^{-\varepsilon}$, by the same computation. The proof of Proposition~\ref{prop:DC} runs with $Y=\{y\in\Lc:y_n=0,\ \|y\|\le3^{-\varepsilon}\}$: $v(\xi(y)-1)\ge\min(2,2\varepsilon)>0$, the valuation of $D_i/\Delta_i(y)$ is still nonnegative, $v(\eta_i(y))\ge\varepsilon$, and $T$ is a contraction of factor $3^{-\varepsilon}$. Its fixed point gives $w_n$ and $\lambda=D_n\xi$ with $v(\lambda)=\sig_n$, and $y_n=A^{(r)}w_n$ has $|y_{n,i}-\delta_{ni}|\le3^{-\varepsilon}$ and $u^{(r)}y_n=\lambda y_n$. The matrix $u^{(r)}$ is admissible: by Lemma~\ref{lem:u}(d), $v(u^{(r)}_{ij})\ge\frac32(i+j)-1-|i-j|\ge0$, and its columns are finite. The proof of Theorem~\ref{thm:spectral}(b) with Lemma~\ref{lem:perturb} at $c=3^{-\varepsilon}$ gives the expansion and the generalized eigenvectors. Finally, $z=(\gamma^iy_{n,i})_i$ lies in $\cL_s$ and $uz=\lambda z$, so $z\in\Lc$ by Theorem~\ref{thm:spectral}(c), and $z$ is a multiple of $x_m$ with $\lambda=\lambda_m$ by Theorem~\ref{thm:spectral}(b); as $v(\lambda)=\sig_n$ and $\sig$ is injective, $m=n$. So $\lambda=\lambda_n$, and $x_n$ is a nonzero multiple of $z\in\cL_s$. The corollary is \decl{CalegariSlopes.Conj5.spectral_expansion} in the formalization, and its last sentence is \texttt{CalegariSlopes.\allowbreak Conj5.\allowbreak x\_mem\_L}.
+\end{proof}
+
+Letting the radius tend to the ends of the interval bounds the valuations of the coordinates of the eigenvectors of Theorem~\ref{thm:spectral}.
+
+\begin{corollary}\label{cor:grading}\lean{CalegariSlopes.Conj5.norm_x_le, CalegariSlopes.Conj5.norm_x_le_of_norm, CalegariSlopes.Conj5.le_zpow_of_forall_rat}
+For all $n,i\ge1$, $v(x_{n,i})\ge|i-n|$.
+\end{corollary}
+
+\begin{proof}
+Fix $n$ and $i\ne n$, let $r$ be rational with $1/3<r<2/3$, and let $s$, $\varepsilon$ and $y_n$ be as in Corollary~\ref{cor:expansion}. By its proof, $(\gamma^jy_{n,j})_j=\kappa x_n$ for some $\kappa\in\Cp$. The coordinates $y_{n,n}$ and $x_{n,n}$ are units, by Corollary~\ref{cor:expansion} and Theorem~\ref{thm:spectral}(a), so the coordinate $n$ gives $v(\kappa)=nv(\gamma)=-sn$; as $v(y_{n,i})\ge\varepsilon$, the coordinate $i$ gives
+\[
+v(x_{n,i})=v(y_{n,i})+iv(\gamma)-v(\kappa)\ge1-|s|+s(n-i).
+\]
+This holds for every rational $s$ with $|s|<1$. Letting $s$ tend to $1$ if $i<n$, and to $-1$ if $i>n$, gives $v(x_{n,i})\ge|i-n|$. For $i=n$, $x_{n,n}$ is a unit, so $v(x_{n,n})=0$. This is \decl{CalegariSlopes.Conj5.norm_x_le} in the formalization.
+\end{proof}
+
+\section{The formal proof and its data}\label{sec:lean}
+
+This section describes what the formal proof proves and what it trusts. The repository gives the commands that rerun each check, and it maps every numbered statement to the Lean declarations of its formal proof.
+
+\subsection{The formal proof}\label{sec:lean-proof}
+The formal proof \cite{CSLean} is a development in Lean~4 \cite{Lean4} with Mathlib \cite{Mathlib20}, in the versions of Section~\ref{sec:lean-soft}. Its main statement repeats Theorem~\ref{thm:main} from the definitions of the introduction, written in a statement file that imports only Mathlib: $E_4$ and $E_6$ are power series over $\Q$ with the divisor sums as coefficients, $\Delta=(E_4^3-E_6^2)/1728$ and $\jinv=\Delta\cdot(E_4^3)^{-1}$ in $\Q[[q]]$; $\Cp$ is Mathlib's completion of an algebraic closure of $\Qp$; $\Sd$ is the set of $F\in\Cp[[q]]$ for which there is a family $(\beta_m)_{m\ge0}$ with $\beta_0=0$ and $|\beta_m|3^{tm}\to0$ for some real $t>0$ such that each coefficient of $F$ is the finite sum of~\eqref{eq:Sd}; $U$ is the operator of the introduction on $\Cp[[q]]$; and $\Sd[\mu]$ is the intersection of $\Sd$ with the maximal generalized eigenspace of $U$ for~$\mu$. The theorem \texttt{CalegariSlopes.Final.calegari\_conjecture\_overconvergent} proves it. A second statement file states Corollary~\ref{cor:fredholm} from the definition of $u$ as the coefficients of $N\cdot Q^{-1}$ in $\Q[[x,y]]$ and of $c_n$ as a sum over the sets of $n$ positive integers, and \texttt{CalegariSlopes.Newton.calegari\_conjecture} proves it. A third statement file states Lemma~\ref{lem:super} and Theorem~\ref{thm:loeffler} as thirteen theorems, from that definition of $u$ and the definitions of $A$, $B$, $D$ of Section~\ref{sec:assembly}, written in a module that imports only the second statement file; the module \texttt{CalegariSlopes.Conj5.Main} proves them. In this file the factorization of Lemma~\ref{lem:super}(a) is stated over every field of characteristic~$0$, and the valuation of an entry $\gamma^{j-i}x$ of $A^{(r)}$ or $B^{(r)}$, with $x\in\Q$, is written $v(x)-s(j-i)$ when $x\ne0$, the entries $x=0$ being exempted. A fourth statement file states Corollaries~\ref{cor:expansion} and~\ref{cor:grading} as three theorems, with a fourth that gives, for every rational~$r$, an element $\gamma\in\Cp$ with $v(\gamma)=-s$. It imports the module of the development that defines the spaces $\Lc$ and $\cL_s$, the action of $u$ on sequences and the families $(x_n,\lambda_n)$ with the properties of Theorem~\ref{thm:spectral}(a), a module that imports only the first statement file and the definitions of $A$, $B$, $D$; it adds the action of $u^{(r)}$ on sequences, and the module \texttt{CalegariSlopes.Conj5.SpectralMain} proves its theorems. In this file the two corollaries are stated for every such family and every $\gamma$ with $v(\gamma)=-s$. The two main theorems have no hypothesis, and they and the seventeen theorems of the other two statement files depend on the three standard axioms of Lean and Mathlib, propositional extensionality, the axiom of choice and the soundness of quotients, and on no other axiom.
+
+The Lean kernel checks each declaration of the development when it is compiled. Comparator \cite{Comparator} checks that each of these theorems proves the statement as written in its statement file, and that the proof uses no axiom other than these three. It has every declaration that they depend on, those of Mathlib included, checked again by nanoda \cite{nanoda}, an implementation of the Lean kernel written separately.
+
+The kernel also checks the computation of Lemma~\ref{lem:RS}, by evaluation, with no compiled code. Its data, the table of the $u_{ij}$ for $0\le i,j\le38$, were written by a PARI/GP script that the proof does not trust: the kernel checks that the table satisfies the recurrence that defines~$u$. Ramanujan's equations (Theorem~\ref{thm:ram}) enter through a Lean proof of them on $q$-expansions with integer coefficients from the formalization of \cite{FLT}, copied into the development; two lemmas on ultrametric sums and determinants in the proof of Corollary~\ref{cor:fredholm} are copied from \cite{Coram}.
+
+The written proofs follow the route and the lemma cuts of the formal proof, with four differences of form. Sequences are indexed from $0$ in the formal proof, the coordinate $0$ being carried along with $x_0=y_0=e_0$ and $\lambda_0=0$. Theorem~\ref{thm:spectral} and the proof of Theorem~\ref{thm:main} are proved for any series $G\in q\Q[[q]]$ that satisfies the two parts of Theorem~\ref{thm:qside}, and then applied to~$g$. In the proof of Theorem~\ref{thm:level3} the four differences are multiplied by $4$, $4$, $8$, $8$ and the weight is $48(1+g)$, which conjugates $N(0)$ by a diagonal matrix and multiplies it by~$48$. Lemma~\ref{lem:u}(d) is proved in the form that $3^{\lfloor(3(i+j)-1)/2\rfloor}$ divides $u_{ij}$.
+
+\subsection{Software}\label{sec:lean-soft}
+The computations used Lean~4.34.1 with Mathlib~v4.34.1 and PARI/GP~2.17.4 \cite{PARI} (the continuous integration of the repository reruns the PARI/GP scripts under version 2.17.2), on a workstation with an AMD Ryzen~9 5900X processor (12 cores, 24 threads) and 64~GB of memory. On that machine the compilation of the development on four cores, Mathlib aside, takes about four minutes, of which about ten seconds go to the kernel evaluation of Lemma~\ref{lem:RS}, and the check of each of the four statement files by Comparator with nanoda takes between one and five minutes, depending on the file and on the load of the machine. The repository \url{\repo} contains the Lean development, the PARI/GP script that wrote the table of Lemma~\ref{lem:RS}, the script that prints the numbers of this paper, and the \TeX{} source of this paper.
+
+\section*{Contact}
+Questions, corrections and comments are welcome as issues on the repository: \url{\repo/issues/new/choose}.
+
+\bibliographystyle{amsalpha}
+\bibliography{refs}
+
+\appendix
+\section{The certificate of Lemma~\ref{lem:P1}}\label{app:cert}
+
+Fix integers $p,k\ge1$. For integers $n\ge0$ and $r$ let $\binom nr=n!/(r!\,(n-r)!)$ if $0\le r\le n$ and $\binom nr=0$ otherwise. For $0\le t\le p$ let
+\[
+C_t=\frac{3^{3t}\,(3p)!\,(2p+2t)!\,(2p+t-1)!}{(3p+3t)!\,(2p)!\,(p-t)!\,t!},
+\]
+and $C_t=0$ for $t<0$ and $t>p$; let $\gamma_k=2k\,k!/(p+k)!$. Rearranging the factorials in the definitions of Section~\ref{sec:assembly},
+\[
+\frac{3^{2t}\mu(p,k,t)}{r_t(p)}=\gamma_k\,C_t\binom{t}{k-p-t}\qquad(t\ge0),
+\]
+both sides vanishing outside $0\le t\le p$, $p\le k-t\le p+t$. So $B_{pk}=\sum_{t\in\Z}\beta(k,t)$ with $\beta(k,t)=\gamma_kC_t\binom{t}{k-p-t}$ for $t\ge0$ and $\beta(k,t)=0$ for $t<0$, a finite sum. Let $c_a=m_a(k)+p^2n_a(k)$, so that $(L_0B_{p\cdot})(k)+p^2(L_1B_{p\cdot})(k)=\sum_t\bigl(c_0\beta(k,t)+c_1\beta(k+1,t)+c_2\beta(k+2,t)\bigr)$. Put
+\begin{gather*}
+\psi(t)=-\frac{(k+1)^2(k+2)^2(k-p+2)(3p+3t-1)(3p+3t-2)}{k+p+1},\\
+\phi(t)=\psi(t)\,\gamma_k\,C_t\binom{t}{k+2-p-t}\quad(t\ge0),\qquad \phi(t)=0\quad(t<0).
+\end{gather*}
+
+\begin{lemma}\label{lem:cert}\lean{CalegariSlopes.ADB.Proof.cert, CalegariSlopes.ADB.Proof.claim_cleared}
+For every integer $t$, $c_0\beta(k,t)+c_1\beta(k+1,t)+c_2\beta(k+2,t)=\phi(t+1)-\phi(t)$.
+\end{lemma}
+
+Since $\phi(t)=0$ outside $0\le t\le p$, summing over $t$ gives Lemma~\ref{lem:P1}.
+
+\begin{proof}
+For $t\le-2$ every term vanishes. For $t=-1$ the left side and $\phi(-1)$ vanish, and $\phi(0)=\psi(0)\gamma_kC_0\binom{0}{k+2-p}$ is nonzero only if $k=p-2$, where $\psi(0)$ has the factor $k-p+2=0$. Let $t\ge0$ and $m=k-p-t$, and let $\varpi=t!/\bigl((m+2)!\,(t-m)!\bigr)$, with $1/n!=0$ for $n<0$. For all integers $t\ge0$ and $m$,
+\begin{gather*}
+\binom tm=\varpi\,(m+1)(m+2),\qquad \binom t{m+1}=\varpi\,(m+2)(t-m),\\
+\binom t{m+2}=\varpi\,(t-m)(t-m-1),\qquad \binom{t+1}{m+1}=\varpi\,(t+1)(m+2),
+\end{gather*}
+each immediate when all the factorials have nonnegative arguments, and with both sides zero otherwise. Moreover $(t+1)C_{t+1}=\rho(t)\,C_t$ for $t\ge0$, with $\rho(t)=-18(t-p)(t+2p)(2t+2p+1)/\bigl((3t+3p+1)(3t+3p+2)\bigr)$, and $\gamma_{k+1}=\epsilon_1\gamma_k$, $\gamma_{k+2}=\epsilon_2\gamma_k$ with $\epsilon_1=(k+1)^2/\bigl(k(k+p+1)\bigr)$ and $\epsilon_2=(k+1)(k+2)^2/\bigl(k(k+p+1)(k+p+2)\bigr)$. Substituting, the difference of the two sides of the lemma is $\gamma_kC_t\,\varpi\cdot\Pi/\bigl(k(k+p+1)(k+p+2)(3t+3p+1)(3t+3p+2)\bigr)$, where $\Pi$ is $k(k+p+1)(k+p+2)(3t+3p+1)(3t+3p+2)$ times
+\[
+c_0(m+1)(m+2)+c_1\epsilon_1(m+2)(t-m)+(c_2\epsilon_2+\psi(t))(t-m)(t-m-1)-\psi(t+1)\,\rho(t)\,(m+2).
+\]
+With $m=k-p-t$, $\Pi$ is a polynomial in $\Z[k,t,p]$, and it is zero. This is \decl{CalegariSlopes.ADB.Proof.cert} in the formalization.
+\end{proof}
+
+\end{document}

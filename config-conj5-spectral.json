@@ -1,0 +1,13 @@
+{
+  "challenge_module": "CalegariSlopes.ChallengeConj5Spectral",
+  "solution_module": "CalegariSlopes.Conj5.SpectralMain",
+  "theorem_names": [
+    "CalegariSlopes.Conj5.exists_gamma",
+    "CalegariSlopes.Conj5.spectral_expansion",
+    "CalegariSlopes.Conj5.x_mem_L",
+    "CalegariSlopes.Conj5.norm_x_le"
+  ],
+  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
+  "enable_nanoda": true,
+  "lean_kernel": false
+}
