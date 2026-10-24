@@ -336,7 +336,7 @@ jobs:
           lake build --no-build Statement Main Challenge Solution > up-to-date.txt 2>&1 || rc=$?
           cat up-to-date.txt
           cp up-to-date.txt verify/lean/up-to-date.txt
-          n=$(grep -E "declaration uses [\`']sorry[\`']" up-to-date.txt | grep -vcE "$ROOT/Challenge[A-Za-z]*\.lean" || true)
+          n=$(grep -E "declaration uses [\`']sorry[\`']" up-to-date.txt | grep -vcE "$ROOT/Challenge[^/]*\.lean" || true)
           if [ "$rc" -eq 0 ] && [ "$n" -eq 0 ]; then r=PASS; else r=FAIL; fi
           printf 'up-to-date\tlake build --no-build Statement Main Challenge Solution\t%s sorry warnings outside the challenge modules\t%s\tlean/up-to-date.txt\n' "$n" "$r" > verify/results/up-to-date.tsv
           [ "$rc" -ne 0 ] || echo "built=true" >> "$GITHUB_OUTPUT"
