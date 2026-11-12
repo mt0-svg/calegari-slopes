@@ -1,5 +1,5 @@
 name = "calegari-slopes"
-version = "1.0.0"
+version = "1.1.0"
 description = "Calegari's conjecture on the slopes of U_3 in tame level 1 and weight 0, proved"
 keywords = ["math", "formal verification", "overconvergent modular forms", "slopes", "Calegari conjecture"]
 license = "Apache-2.0"

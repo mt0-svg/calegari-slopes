@@ -17,7 +17,9 @@ Every theorem of `CalegariSlopes/ChallengeConj5Spectral.lean`, with the same nam
 of the paper: the eigenvectors `y_n` of `u^(r)` come from the contraction (`exists_eigvec_r`) and are identified with
 the `x_n` (`identify`); the expansion and the generalized eigenvectors follow from the near basis `y` (`SeqK`);
 Corollary 8.4 is the limit `s → ±1` of the bounds at the radii `s = 3 - 6r` (`norm_x_le_of_norm`,
-`le_zpow_of_forall_rat`). The challenge is not imported; Comparator checks the pair (`config-conj5-spectral.json`).
+`le_zpow_of_forall_rat`). The fifth theorem of the challenge, `CalegariSlopes.Spectral.exists_eigenFamily`, is
+proved in `CalegariSlopes/Spectral/Contraction.lean`, which this module imports. The challenge is not imported;
+Comparator checks the pair (`config-conj5-spectral.json`).
 -/
 
 open Filter Topology

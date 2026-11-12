@@ -102,15 +102,15 @@ noncomputable def Phi (G : PowerSeries ℚ) : (ℕ → K) →ₗ[K] PowerSeries 
 
 /-! ## The hypotheses of Lemma 6.1 and the eigen-family of Theorem 2.4 -/
 
-/-- The hypotheses of Lemma 6.1: every `x n` is in `c₀` and `‖x n - e n‖ ≤ c` coordinatewise, `0 ≤ c < 1`. -/
+/-- The hypotheses of Lemma 6.1 (`c` is the paper's `κ`): every `x n` is in `c₀`, `‖x n i - e n i‖ ≤ c`, `0 ≤ c < 1`. -/
 structure NearBasis (x : ℕ → ℕ → K) (c : ℝ) : Prop where
   nonneg : 0 ≤ c
   lt_one : c < 1
   isC0 : ∀ n, IsC0 (x n)
   near : ∀ n i, ‖x n i - unitSeq n i‖ ≤ c
 
-/-- The eigenvectors `x_n = A w_n` and eigenvalues `λ_n = D_n μ_n` of Theorem 2.4 (a), `n ≥ 1`, completed at
-`n = 0` by `x_0 = e_0`, `λ_0 = 0` (the spectator coordinate). -/
+/-- The eigenvectors `x_n = A (e_n + y)` and eigenvalues `λ_n = D_n ξ` of Theorem 2.4 (a), with `y` and `ξ` given by
+Proposition 6.4 for `n`, `n ≥ 1`, completed at `n = 0` by `x_0 = e_0`, `λ_0 = 0` (the spectator coordinate). -/
 structure EigenFamily where
   x : ℕ → ℕ → K
   lam : ℕ → K

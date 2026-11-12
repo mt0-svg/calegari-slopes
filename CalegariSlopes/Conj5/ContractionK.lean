@@ -18,7 +18,7 @@ the paper's proof of Corollary 8.3 runs it for `C^(r)_ij = γ ^ (j - i) C_ij` wi
 
 For `n ≥ 1` and `y` in the ball `Y = {y ∈ c₀ : y_0 = y_n = 0, ‖y‖ ≤ c}`, with `w = e_n + y`: `μ(y) = (M w)_n` (the
 paper's `ξ(y)`), `s_i(y) = (M° w)_i` (`M°` the off-diagonal part of `M`; the paper's `η_i(y)`),
-`δ_i(y) = D_n μ(y) - D_i M_ii` (the paper's `Δ_i(y)`), and `T(y)_i = D_i s_i(y) / δ_i(y)` for `i ∉ {0, n}`,
+`δ_i(y) = D_n μ(y) - D_i M_ii` (the paper's `Θ_i(y)`), and `T(y)_i = D_i s_i(y) / δ_i(y)` for `i ∉ {0, n}`,
 `T(y)_0 = T(y)_n = 0`. Then `T(Y) ⊆ Y` and `T` contracts by `c`; its fixed point gives `D (M w) = D_n μ w`.
 -/
 

@@ -80,7 +80,7 @@ def R (W : ℕ → ℕ → ℚ) (i j : ℕ) : ℚ :=
 /-- `S_ij = i u_ij`. -/
 noncomputable def S (i j : ℕ) : ℚ := i * u i j
 
-/-- `λ_p = p D_p` (the paper's `κ_p`). -/
+/-- `λ_p = p D_p`, the weight `p D_p` of Section 5. -/
 def lam (p : ℕ) : ℚ := p * D p
 
 /-- `V_ij = Σ_p λ_p B_pi B_pj`, `i (ADB)_ij` written as a bilinear form. -/
@@ -105,15 +105,15 @@ def binZ (n : ℕ) (r : ℤ) : ℚ := if 0 ≤ r ∧ r ≤ n then (n.choose r.to
 /-- `1 / n!`, zero for `n < 0`. -/
 def invFac (n : ℤ) : ℚ := if 0 ≤ n then ((n.toNat).factorial : ℚ)⁻¹ else 0
 
-/-- The master term `w(t, m) = t! / ((m + 2)! (t - m)!)` (the paper's `ϖ`), with `1 / n! = 0` for `n < 0`. -/
+/-- The master term `w(t, m) = t! / ((m + 2)! (t - m)!)` (the paper's `π`), with `1 / n! = 0` for `n < 0`. -/
 def w (t : ℕ) (m : ℤ) : ℚ := t.factorial * invFac (m + 2) * invFac (t - m)
 
-/-- The summand of `B_pk` in the form of Appendix A: `β(k, t) = g(k) C_t binom(t, k - p - t)` (`g` is the paper's
-`γ`). -/
+/-- The summand of `B_pk` in the form of Appendix A: `β(k, t) = g(k) C_t binom(t, k - p - t)` (the paper's
+`Ψ(k, t) = Ω_k Λ_t binom(t, k - p - t)`: `g(k)` is its `Ω_k` and `C_t` its `Λ_t`). -/
 def beta (p k t : ℕ) : ℚ := g p k * Cc p t * binZ t ((k : ℤ) - p - t)
 
 /-- The rational factor of the certificate,
-`ψ(k, t) = -(k+1)^2 (k+2)^2 (k - p + 2) (3p + 3t - 1) (3p + 3t - 2) / (k + p + 1)`. -/
+`ψ(k, t) = -(k+1)^2 (k+2)^2 (k - p + 2) (3p + 3t - 1) (3p + 3t - 2) / (k + p + 1)` (the paper's `ζ(t)`). -/
 def psi (p k t : ℕ) : ℚ :=
   -((k : ℚ) + 1) ^ 2 * ((k : ℚ) + 2) ^ 2 * ((k : ℚ) - p + 2) * (3 * (p : ℚ) + 3 * t - 1) *
     (3 * (p : ℚ) + 3 * t - 2) / ((k : ℚ) + p + 1)

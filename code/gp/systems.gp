@@ -15,7 +15,7 @@ E = [e1, e2, e3, e4];
   -(g + 9)*A/12, (-(13*g + 9)*p1 + 3*(21*g + 17)*p3)/24, 0, -1/3;
   -(45*g^2 + 62*g + 9)*A^2/8 - (1 + g)*e1/2, -(27*g^2 + 18*g - 1)*A^2/8, ((1 - g)*p1 + 6*g*p3)/2, 0;
   (g^2 - 18*g - 27)*A^2/8, -(9*g^2 + 62*g + 45)*A^2/8 - (1 + g)*e2/2, 0, (-2*g*p1 + 3*(3*g + 1)*p3)/2];}
-for (i = 1, 4, print("level 3, (1+g) theta delta_", i, " - (N delta)_", i, ": ", simplify((1 + g)*th(E[i]) - sum(j = 1, 4, N[i, j]*E[j]))));
+for (i = 1, 4, print("level 3, (1+g) theta d_", i, " - (N d)_", i, ": ", simplify((1 + g)*th(E[i]) - sum(j = 1, 4, N[i, j]*E[j]))));
 N0 = substvec(N, [p1, p3, g, q1, q3, r1, r3], [1, 1, 0, 1, 1, 1, 1]);
 print("level 3, N(0) = ", N0);
 print("level 3, det(n I - N(0)) = ", factor(matdet(n*matid(4) - N0)));
@@ -33,13 +33,13 @@ dv = [tP9, u*(VE2 + (4*W^3 - 1)*u)/2, u*(1 - W^3)*W, a*((1 + g)*E2 + (3*g - 1)*a
 th(f) = sum(k = 1, 5, deriv(f, vars[k])*dv[k]);
 Vg = W^3/(1 - W^3);
 print("V of the identity for theta E, times 2(1 - W^3): ", simplify(2*(1 - W^3)*(6*(1 + Vg)*th(u)/3 - u*((1 + Vg)*VE2 + (3*Vg - 1)*u))));
-K = a - u*(1 + 2*W)^2; L = (1 - W)^3*g - 9*W*(1 + W + W^2);
-w = 6*(1 + g)*(1 + 2*W)^3;
-N11 = (1 + g)*(9*P9*(1 + 2*W)^3 + 3*(32*u*W^5 + 32*u*W^4 + (40*u + 4*K)*W^3 + 16*u*W^2 + (6*K - 8*u)*W - 4*u - K));
+d1 = a - u*(1 + 2*W)^2; d2 = (1 - W)^3*g - 9*W*(1 + W + W^2);
+chi = 6*(1 + g)*(1 + 2*W)^3;
+N11 = (1 + g)*(9*P9*(1 + 2*W)^3 + 3*(32*u*W^5 + 32*u*W^4 + (40*u + 4*d1)*W^3 + 16*u*W^2 + (6*d1 - 8*u)*W - 4*u - d1));
 N12 = 4*a^2; N21 = 54*(1 + g)*(1 + 2*W)^3*W*(1 + W + W^2); N22 = 6*(1 + g)*(1 + 2*W)^3*(a - 3*u*W*(1 + W + W^2));
-print("level 9, w theta K - N11 K - N12 L: ", simplify(w*th(K) - N11*K - N12*L));
-print("level 9, w theta L - N21 K - N22 L: ", simplify(w*th(L) - N21*K - N22*L));
+print("level 9, chi theta d_1 - N11 d_1 - N12 d_2: ", simplify(chi*th(d1) - N11*d1 - N12*d2));
+print("level 9, chi theta d_2 - N21 d_1 - N22 d_2: ", simplify(chi*th(d2) - N21*d1 - N22*d2));
 N9 = substvec([N11, N12; N21, N22], [P9, u, W, a, g], [1, 1, 0, 1, 0]);
-print("level 9, w(0) = ", substvec(w, [W, g], [0, 0]), ", N(0) = ", N9);
+print("level 9, chi(0) = ", substvec(chi, [W, g], [0, 0]), ", N(0) = ", N9);
 d9 = matdet(6*n*matid(2) - N9);
 print("level 9, det(6n I - N(0)) = ", content(d9), " * ", factor(d9/content(d9)));

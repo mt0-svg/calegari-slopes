@@ -14,8 +14,9 @@ public import CalegariSlopes.ADB.Defs
 
 The statements of Lemma 8.1 and Theorem 8.2 of the paper, with `sorry` proofs: the challenge of Comparator
 (`config-conj5.json`), which nothing imports, so its warnings `declaration uses sorry` are expected;
-`CalegariSlopes/Conj5/Main.lean` proves them under the same names. `(F)` and `(U)` below are Lemma 8.1 (a), `(I)`,
-`(M)` and `(P)` are Theorem 8.2 (a), (b) and (c), and the witnesses are Lemma 8.1 (c).
+`CalegariSlopes/Conj5/Main.lean` and the modules it imports prove them under the same names. `(F)` and `(U)` below
+are Lemma 8.1 (a), the entries next to the diagonal are Lemma 8.1 (b), `(I)`, `(M)` and `(P)` are Theorem 8.2 (a),
+(b) and (c), and the witnesses are Lemma 8.1 (c).
 
 `u` is the matrix of `U_3` in the basis `g, g ^ 2, ...` of `CalegariSlopes/Target.lean`; `A`, `B`, `D` are Loeffler's
 factors of `CalegariSlopes/ADB/Defs.lean` (`A` unit lower triangular, `B` unit upper triangular, `D` diagonal,
@@ -29,6 +30,8 @@ factors of `CalegariSlopes/ADB/Defs.lean` (`A` unit lower triangular, `B` unit u
   `v_3(γ^(j-i) x) = v_3(x) + (6r - 3)(j - i)`, written `padicValRat 3 x + (6 * r - 3) * (j - i)`; an entry `x = 0`
   has valuation `+∞` and is exempted by the disjunct `x = 0` (`padicValRat 3 0 = 0`).
 * `valuation_B_ge`, `valuation_A_ge`, `valuation_uniform`: the bounds of (M).
+* `B_succ`, `A_succ`, `padicValRat_B_succ`, `padicValRat_A_succ`: the entries of `B` above and of `A` below the
+  diagonal, and their valuations.
 * `B_two_four`, `A_four_two`, `padicValRat_B_two_four`, `padicValRat_A_four_two`: the witnesses of optimality.
 -/
 
@@ -105,6 +108,26 @@ theorem congr_three_iff (r : ℚ) :
       (B i j = 0 ∨ 1 ≤ (padicValRat 3 (B i j) : ℚ) + (6 * r - 3) * ((j : ℚ) - i)) ∧
       (A i j = 0 ∨ 1 ≤ (padicValRat 3 (A i j) : ℚ) + (6 * r - 3) * ((j : ℚ) - i))) ↔
       5 / 12 ≤ r ∧ r ≤ 7 / 12 := by
+  sorry
+
+/-- `B_{i,i+1} = 36 i (i + 1)^2 / ((3i + 1)(3i + 2))`. -/
+theorem B_succ (i : ℕ) (hi : 1 ≤ i) :
+    B i (i + 1) = 36 * (i : ℚ) * ((i : ℚ) + 1) ^ 2 / ((3 * (i : ℚ) + 1) * (3 * (i : ℚ) + 2)) := by
+  sorry
+
+/-- `A_{i+1,i} = 36 i^2 (i + 1) / ((3i + 1)(3i + 2))`. -/
+theorem A_succ (i : ℕ) (hi : 1 ≤ i) :
+    A (i + 1) i = 36 * (i : ℚ) ^ 2 * ((i : ℚ) + 1) / ((3 * (i : ℚ) + 1) * (3 * (i : ℚ) + 2)) := by
+  sorry
+
+/-- `v_3(B_{i,i+1}) = 2 + v_3(i) + 2 v_3(i + 1)`. -/
+theorem padicValRat_B_succ (i : ℕ) (hi : 1 ≤ i) :
+    padicValRat 3 (B i (i + 1)) = 2 + (padicValNat 3 i : ℤ) + 2 * (padicValNat 3 (i + 1) : ℤ) := by
+  sorry
+
+/-- `v_3(A_{i+1,i}) = 2 + 2 v_3(i) + v_3(i + 1)`. -/
+theorem padicValRat_A_succ (i : ℕ) (hi : 1 ≤ i) :
+    padicValRat 3 (A (i + 1) i) = 2 + 2 * (padicValNat 3 i : ℤ) + (padicValNat 3 (i + 1) : ℤ) := by
   sorry
 
 /-- The witness of optimality above the diagonal: `B_24 = 3060/77`. -/

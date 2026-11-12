@@ -15,7 +15,8 @@ public import CalegariSlopes.Conj5.Lemmas
 
 Every theorem of `CalegariSlopes/ChallengeConj5.lean`, with the same name and statement, proved from
 `CalegariSlopes.ADB.adb` (Theorem 2.3) and the lemmas of `Conj5/Lemmas.lean`, as in the proofs of Lemma 8.1 and
-Theorem 8.2 of the paper; the challenge is not imported. Comparator checks the pair (`config-conj5.json`).
+Theorem 8.2 of the paper; Lemma 8.1 (b) is proved in `Conj5/Lemmas.lean` itself. The challenge is not imported.
+Comparator checks the pair (`config-conj5.json`).
 -/
 
 namespace CalegariSlopes.Conj5

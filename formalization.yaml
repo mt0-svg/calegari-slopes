@@ -34,19 +34,19 @@ classification:
   msc2020: ["11F33", "11F85", "11F11", "33C20", "03B35"]
 
 status:
-  scope: "Theorem 1.2 and every other numbered statement of the paper, Conjecture 1.1 aside, which Theorem 1.2 proves."
+  scope: "Theorem 1.2 and every other numbered statement of the paper, Conjecture 1.1 aside, which Theorem 1.2 proves for cusp forms."
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: [propext, Classical.choice, Quot.sound]
   main_results:
-    - declaration: "CalegariSlopes.Final.calegari_conjecture_overconvergent"
-      file: "CalegariSlopes/Final.lean"
+    - declaration: "CalegariSlopes.Overconvergent.calegari_conjecture_overconvergent"
+      file: "CalegariSlopes/Solution.lean"
       sorry_count: 0
       axioms: [propext, Classical.choice, Quot.sound]
       comparator_config: "config.json"
       literature_dependencies: []
-    - declaration: "CalegariSlopes.Newton.calegari_conjecture"
-      file: "CalegariSlopes/Newton/Main.lean"
+    - declaration: "CalegariSlopes.calegari_conjecture"
+      file: "CalegariSlopes/SolutionMatrix.lean"
       sorry_count: 0
       axioms: [propext, Classical.choice, Quot.sound]
       comparator_config: "config-matrix.json"
@@ -63,6 +63,12 @@ status:
       axioms: [propext, Classical.choice, Quot.sound]
       comparator_config: "config-conj5-spectral.json"
       literature_dependencies: []
+    - declaration: "CalegariSlopes.Spectral.exists_eigenFamily"
+      file: "CalegariSlopes/Spectral/Contraction.lean"
+      sorry_count: 0
+      axioms: [propext, Classical.choice, Quot.sound]
+      comparator_config: "config-conj5-spectral.json"
+      literature_dependencies: []
 
 automation:
   methods:
@@ -71,8 +77,8 @@ automation:
 fidelity:
   divergences: >-
     The space of overconvergent cusp forms is the space of q-expansions of the series sum_m beta_m j^(-m) with
-    |beta_m| 3^(tm) -> 0 for some t > 0 (Section 1 of the paper); the formal statement does not use that U_3 maps it
-    into itself. Sequences are indexed from 0 in the formal proof. Theorem 2.4 and the proof of Theorem 1.2 are
+    |beta_m| 3^(alpha m) -> 0 for some alpha > 0 (Section 1 of the paper); the formal statement does not use that U_3 maps it
+    into itself. Sequences are indexed from 0 in the formal proof. Proposition 2.2 and the proof of Theorem 1.2 are
     stated for any series G satisfying the two parts of Theorem 2.1, then applied to g. In Section 8 the valuation
     of an entry gamma^(j-i) x of A^(r) or B^(r), x rational and nonzero, is written v_3(x) + (6r - 3)(j - i), the
     zero entries being exempted, and Corollaries 8.3 and 8.4 are stated for every family (x_n, lambda_n) with the
@@ -81,13 +87,13 @@ fidelity:
 
 review:
   status: agent-reviewed
-  notes: "The proof was refereed by agents with fresh context; Comparator checks the two main statements against statement files that import only Mathlib, Lemma 8.1 and Theorem 8.2 against a statement file that imports in addition the definitions of Loeffler's factors, and Corollaries 8.3 and 8.4 against one that imports in addition the definitions of the sequence spaces and of the eigenvectors of Theorem 2.4(a)."
+  notes: "The proof was refereed by agents with fresh context; Comparator checks the two main statements against statement files that import only Mathlib, Lemma 8.1 and Theorem 8.2 against a statement file that imports in addition the definitions of Loeffler's factors, and Theorem 2.4(a) and Corollaries 8.3 and 8.4 against one that imports in addition the definitions of the sequence spaces and of the families of eigenvectors that Theorem 2.4(a) describes."
 alignment:
   namespace: "CalegariSlopes"
   statements:
     - source: "Conjecture 1.1"
       status: other
-      note: "the conjecture, which Theorem 1.2 proves"
+      note: "the conjecture; Theorem 1.2 proves it for cusp forms"
     - source: "Theorem 1.2"
       lean: "CalegariSlopes.Final.calegari_conjecture_overconvergent"
       module: "CalegariSlopes/Final.lean"

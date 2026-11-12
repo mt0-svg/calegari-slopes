@@ -17,7 +17,7 @@ public import CalegariSlopes.Spectral.Seq
 
 For `n ≥ 1` and `y` in the ball `Y = {y ∈ c₀ : y_0 = y_n = 0, ‖y‖ ≤ 1/3}`, with `w = e_n + y`:
 `μ(y) = (C w)_n` (the paper's `ξ(y)`), `s_i(y) = (C° w)_i` (`C°` the off-diagonal part of `C`; the paper's
-`η_i(y)`), `δ_i(y) = D_n μ(y) - D_i C_ii` (the paper's `Δ_i(y)`), and
+`η_i(y)`), `δ_i(y) = D_n μ(y) - D_i C_ii` (the paper's `Θ_i(y)`), and
 `T(y)_i = D_i s_i(y) / δ_i(y)` for `i ∉ {0, n}`, `T(y)_0 = T(y)_n = 0`. The estimates (V1) to (V3) put `T(Y)` in
 `Y`; (L1) to (L3) make `T` a contraction of factor `1/3`; its fixed point gives `D (C w) = D_n μ w`.
 -/

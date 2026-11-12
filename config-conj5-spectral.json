@@ -5,7 +5,8 @@
     "CalegariSlopes.Conj5.exists_gamma",
     "CalegariSlopes.Conj5.spectral_expansion",
     "CalegariSlopes.Conj5.x_mem_L",
-    "CalegariSlopes.Conj5.norm_x_le"
+    "CalegariSlopes.Conj5.norm_x_le",
+    "CalegariSlopes.Spectral.exists_eigenFamily"
   ],
   "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
   "enable_nanoda": true,
